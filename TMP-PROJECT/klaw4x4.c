@@ -23,30 +23,30 @@ void Klaw_Init(void) {
 
 char Klaw_Read(void) {
     const char keymap[4][4] = {
-        {'*', '0', '#', 'D'},
-        {'7', '8', '9', 'C'},
+        {'1', '2', '3', 'A'},
         {'4', '5', '6', 'B'},
-        {'1', '2', '3', 'A'}
+        {'7', '8', '9', 'C'},
+        {'*', '0', '#', 'D'}
     };
 
-    const uint32_t rows[4] = {5, 7, 6, 0}; // R1 - PTA5, R2 - PTA7, R3 - PTA6, R4 - PTB0
     const uint32_t cols[4] = {6, 7, 10, 11}; // C1 - PTB6, C2 - PTB7, C3 - PTB10, C4 - PTB11
+    const uint32_t rows[4] = {5, 7, 6, 0};   // R1 - PTA5, R2 - PTA7, R3 - PTA6, R4 - PTB0
 
-    for (int col = 0; col < 4; col++) {
+    for (int col = 3; col >= 0; col--) {
         // Ustawienie wszystkich kolumn na stan wysoki
         PTB->PSOR = (1 << cols[0]) | (1 << cols[1]) | (1 << cols[2]) | (1 << cols[3]);
 
         // Ustawienie aktualnej kolumny na stan niski
         PTB->PCOR = (1 << cols[col]);
 
-        for (int row = 0; row < 4; row++) {
+        for (int row = 3; row >= 0; row--) {
             GPIO_Type *port = (row < 3) ? PTA : PTB;
             uint32_t row_mask = (1 << rows[row]);
 
             if (!(port->PDIR & row_mask)) {
                 // Resetowanie stanu wszystkich kolumn
                 PTB->PSOR = (1 << cols[0]) | (1 << cols[1]) | (1 << cols[2]) | (1 << cols[3]);
-                return keymap[row][col];
+                return keymap[3 - row][3 - col]; // Odwrócenie indeksu dla wierszy i kolumn
             }
         }
     }
