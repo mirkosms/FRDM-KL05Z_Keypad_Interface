@@ -4,86 +4,105 @@
 
 typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
-// Definiowanie wartości logicznych
 #define true 1
 #define false 0
+#define DEBOUNCE_COUNT 5 // Liczba odczytów dla potwierdzenia naciśnięcia
 
 static void floatToStr(float num, char* str);
+static void processKey(char key);
+
+volatile char lastKey = '\0';
+volatile float currentNumber = 0.0f;
+volatile float storedNumber = 0.0f;
+volatile Operation currentOperation = NONE;
+volatile int decimalEntered = false;
+volatile float decimalMultiplier = 0.1f;
 
 int main(void) {
-    char buffer[16];
-    float currentNumber = 0.0f;
-    float storedNumber = 0.0f;
-    Operation currentOperation = NONE;
-    int key_pressed = false;  
-    int decimalEntered = false;
-    float decimalMultiplier = 0.1f;  // Deklaracja zmiennej
-
     Klaw_Init();
     LCD1602_Init();
     LCD1602_ClearAll();
 
+    // Konfiguracja SysTick
+    SysTick_Config(SystemCoreClock / 100); // Przykład dla przerwania co 1 ms
+
     while (1) {
-        char key = Klaw_Read();
-
-        if (key != '\0' && !key_pressed) {
-            key_pressed = true;
-
-            if (key >= '0' && key <= '9') {
-                if (!decimalEntered) {
-                    currentNumber = currentNumber * 10.0f + (key - '0');
-                } else {
-                    currentNumber += (key - '0') * decimalMultiplier;
-                    decimalMultiplier *= 0.1f;
-                }
-                floatToStr(currentNumber, buffer);
-                LCD1602_ClearAll();
-                LCD1602_Print(buffer);
-            } else if (key == '.') {
-                decimalEntered = true;
-            } else if (key == '+' || key == '-' || key == '*' || key == '/') {
-                storedNumber = currentNumber;
-                currentNumber = 0.0f;
-                decimalEntered = false;
-                decimalMultiplier = 0.1f;
-                switch (key) {
-                    case '+': currentOperation = ADD; break;
-                    case '-': currentOperation = SUBTRACT; break;
-                    case '*': currentOperation = MULTIPLY; break;
-                    case '/': currentOperation = DIVIDE; break;
-                }
-            } else if (key == '=') {
-                switch (currentOperation) {
-                    case ADD: currentNumber += storedNumber; break;
-                    case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
-                    case MULTIPLY: currentNumber *= storedNumber; break;
-                    case DIVIDE:
-                        if (currentNumber != 0.0f) currentNumber = storedNumber / currentNumber;
-                        else LCD1602_Print("Error");
-                        break;
-                    default: break;
-                }
-                floatToStr(currentNumber, buffer);
-                LCD1602_ClearAll();
-                LCD1602_Print(buffer);
-                currentOperation = NONE;
-                decimalEntered = false;
-                decimalMultiplier = 0.1f;
-            } else if (key == 'C') {
-                currentNumber = 0.0f;
-                storedNumber = 0.0f;
-                currentOperation = NONE;
-                decimalEntered = false;
-                decimalMultiplier = 0.1f;
-                LCD1602_ClearAll();
-            }
-        } else if (key == '\0') {
-            key_pressed = false;
-        }
-
-        for (int i = 0; i < 10000; i++) {} // Debouncing delay
+        // Pętla może pozostać pusta lub zawierać logikę niezwiązaną z przerwaniami
     }
 }
+
+void SysTick_Handler(void) {
+    static char last_key = 0;
+    static int debounce_counter = 0;
+    char key = Klaw_Read();
+
+    if (key != last_key) {
+        debounce_counter = 0;
+        last_key = key;
+    } else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
+        debounce_counter++;
+        if (debounce_counter == DEBOUNCE_COUNT) {
+            processKey(key); // Przetwarzanie naciśniętego klawisza po debouncingu
+        }
+    }
+}
+
+
+static void processKey(char key) {
+    char buffer[16];
+    char displayString[2] = {key, '\0'}; // Tworzy ciąg znaków z pojedynczego klawisza
+
+    if (key >= '0' && key <= '9') {
+        if (!decimalEntered) {
+            currentNumber = currentNumber * 10.0f + (key - '0');
+        } else {
+            currentNumber += (key - '0') * decimalMultiplier;
+            decimalMultiplier *= 0.1f;
+        }
+        floatToStr(currentNumber, buffer);
+        LCD1602_ClearAll();
+        LCD1602_Print(buffer);
+    } else if (key == '.') {
+        decimalEntered = true;
+        floatToStr(currentNumber, buffer);
+        strcat(buffer, ".");
+        LCD1602_ClearAll();
+        LCD1602_Print(buffer);
+    } else if (key == '+' || key == '-' || key == '*' || key == '/') {
+        storedNumber = currentNumber;
+        currentNumber = 0.0f;
+        decimalEntered = false;
+        decimalMultiplier = 0.1f;
+        currentOperation = (key == '+') ? ADD :
+                           (key == '-') ? SUBTRACT :
+                           (key == '*') ? MULTIPLY : DIVIDE;
+
+        LCD1602_ClearAll();
+        LCD1602_Print(displayString); // Wyświetla znak operacji na wyświetlaczu
+    } else if (key == '=') {
+        switch (currentOperation) {
+            case ADD: currentNumber += storedNumber; break;
+            case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
+            case MULTIPLY: currentNumber *= storedNumber; break;
+            case DIVIDE:
+                if (currentNumber != 0.0f) 
+                    currentNumber = storedNumber / currentNumber;
+                else 
+                    LCD1602_Print("Error");
+                break;
+            default: break;
+        }
+        floatToStr(currentNumber, buffer);
+        LCD1602_ClearAll();
+        LCD1602_Print(buffer);
+        currentOperation = NONE;
+        decimalEntered = false;
+        decimalMultiplier = 0.1f;
+    }
+    // else if (key == 'C') { ... } - Czeka na implementację na panelu dotykowym
+}
+
+
 
 static void floatToStr(float num, char* str) {
     int intPart = (int)num;

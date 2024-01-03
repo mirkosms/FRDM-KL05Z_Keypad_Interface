@@ -27,26 +27,73 @@ Project File Date:  01/02/2024
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'FRDM KL05ZJ'
-main.c(56): warning: enumeration value 'NONE' not explicitly handled in switch [-Wswitch-enum]
-                switch (currentOperation) {
-                        ^
-main.c(99): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(14): warning: no previous extern declaration for non-static variable 'lastKey' [-Wmissing-variable-declarations]
+volatile char lastKey = '\0';
+              ^
+main.c(14): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile char lastKey = '\0';
+         ^
+main.c(15): warning: no previous extern declaration for non-static variable 'currentNumber' [-Wmissing-variable-declarations]
+volatile float currentNumber = 0.0f;
+               ^
+main.c(15): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile float currentNumber = 0.0f;
+         ^
+main.c(16): warning: no previous extern declaration for non-static variable 'storedNumber' [-Wmissing-variable-declarations]
+volatile float storedNumber = 0.0f;
+               ^
+main.c(16): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile float storedNumber = 0.0f;
+         ^
+main.c(17): warning: no previous extern declaration for non-static variable 'currentOperation' [-Wmissing-variable-declarations]
+volatile Operation currentOperation = NONE;
+                   ^
+main.c(17): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile Operation currentOperation = NONE;
+         ^
+main.c(18): warning: no previous extern declaration for non-static variable 'decimalEntered' [-Wmissing-variable-declarations]
+volatile int decimalEntered = false;
+             ^
+main.c(18): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile int decimalEntered = false;
+         ^
+main.c(19): warning: no previous extern declaration for non-static variable 'decimalMultiplier' [-Wmissing-variable-declarations]
+volatile float decimalMultiplier = 0.1f;
+               ^
+main.c(19): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile float decimalMultiplier = 0.1f;
+         ^
+main.c(68): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
+void SysTick_Handler(void) {
+     ^
+main.c(68): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SysTick_Handler(void) {
+^
+static 
+main.c(102): warning: implicitly declaring library function 'strcat' with type 'char *(char *, const char *)' [-Wimplicit-function-declaration]
+        strcat(buffer, ".");
+        ^
+main.c(102): note: include the header <string.h> or explicitly provide a declaration for 'strcat'
+main.c(117): warning: enumeration value 'NONE' not explicitly handled in switch [-Wswitch-enum]
+        switch (currentOperation) {
+                ^
+main.c(152): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
         str[i++] = '0' + digit;
                  ~ ~~~~^~~~~~~
-main.c(114): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(167): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
             str[i++] = '0' + (decimalPart / 10);
                      ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-main.c(116): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(169): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
             str[i++] = '0' + (decimalPart / 10);
                      ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-main.c(117): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
+main.c(170): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
             str[i++] = '0' + (decimalPart % 10);
                      ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-5 warnings generated.
+13 warnings generated.
 compiling main.c...
 linking...
-Program Size: Code=3952 RO-data=308 RW-data=4 ZI-data=368  
-".\ProjektTMP2.axf" - 0 Error(s), 5 Warning(s).
+Program Size: Code=4116 RO-data=308 RW-data=12 ZI-data=392  
+".\ProjektTMP2.axf" - 0 Error(s), 13 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -74,7 +121,7 @@ Package Vendor: Keil
    * Component: Keil::Device:Startup:1.0.0
       Source file:   Device\Source\ARM\startup_MKL05Z4.s
       Source file:   Device\Source\system_MKL05Z4.c
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
