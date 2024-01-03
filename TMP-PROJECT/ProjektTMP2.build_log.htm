@@ -30,20 +30,23 @@ Build target 'FRDM KL05ZJ'
 main.c(56): warning: enumeration value 'NONE' not explicitly handled in switch [-Wswitch-enum]
                 switch (currentOperation) {
                         ^
-main.c(97): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(99): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
         str[i++] = '0' + digit;
                  ~ ~~~~^~~~~~~
-main.c(108): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
-    str[i++] = '0' + (decimalPart / 10);
-             ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-main.c(109): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
-    str[i++] = '0' + (decimalPart % 10);
-             ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-4 warnings generated.
+main.c(114): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+            str[i++] = '0' + (decimalPart / 10);
+                     ~ ~~~~^~~~~~~~~~~~~~~~~~~~
+main.c(116): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+            str[i++] = '0' + (decimalPart / 10);
+                     ~ ~~~~^~~~~~~~~~~~~~~~~~~~
+main.c(117): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
+            str[i++] = '0' + (decimalPart % 10);
+                     ~ ~~~~^~~~~~~~~~~~~~~~~~~~
+5 warnings generated.
 compiling main.c...
 linking...
-Program Size: Code=3932 RO-data=308 RW-data=4 ZI-data=368  
-".\ProjektTMP2.axf" - 0 Error(s), 4 Warning(s).
+Program Size: Code=3952 RO-data=308 RW-data=4 ZI-data=368  
+".\ProjektTMP2.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 

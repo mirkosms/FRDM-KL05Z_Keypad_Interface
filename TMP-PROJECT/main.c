@@ -89,7 +89,9 @@ static void floatToStr(float num, char* str) {
     int intPart = (int)num;
     int decimalPart = (int)((num - (float)intPart) * 100);
 
-    if (decimalPart < 0) decimalPart = -decimalPart;
+    if (decimalPart < 0) {
+        decimalPart = -decimalPart; // Zapewnienie dodatniości
+    }
 
     int i = 0;
     do {
@@ -98,14 +100,25 @@ static void floatToStr(float num, char* str) {
         intPart /= 10;
     } while (intPart > 0);
 
+    // Odwracanie części całkowitej
     for (int j = 0; j < i / 2; ++j) {
         char temp = str[j];
         str[j] = str[i - 1 - j];
         str[i - 1 - j] = temp;
     }
 
-    str[i++] = '.';
-    str[i++] = '0' + (decimalPart / 10);
-    str[i++] = '0' + (decimalPart % 10);
+    // Dodanie części dziesiętnej tylko wtedy, gdy jest to konieczne
+    if (decimalPart > 0) {
+        str[i++] = '.';
+        if (decimalPart % 10 == 0) { // Jeśli tylko jedna znacząca cyfra
+            str[i++] = '0' + (decimalPart / 10);
+        } else { // Dwie znaczące cyfry
+            str[i++] = '0' + (decimalPart / 10);
+            str[i++] = '0' + (decimalPart % 10);
+        }
+    }
+
     str[i] = '\0';
 }
+
+
