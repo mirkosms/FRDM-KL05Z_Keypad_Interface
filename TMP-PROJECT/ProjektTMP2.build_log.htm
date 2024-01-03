@@ -21,22 +21,22 @@ Target DLL:      Segger\JL2CM3.dll V2.99.40.0
 Dialog DLL:      TARMCM1.DLL V1.14.4.0
  
 <h2>Project:</h2>
-D:\sem5\TMP2\TMP-PROJECT\ProjektTMP2.uvprojx
+C:\Users\HP\FRDM-KL05Z_Keypad_Interface\TMP-PROJECT\ProjektTMP2.uvprojx
 Project File Date:  01/02/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'FRDM KL05ZJ'
-klaw4x4.c(24): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
-    PTA->PDDR &= ~((1 << ROW1) | (1 << ROW2) | (1 << ROW3));
-              ~~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-klaw4x4.c(25): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
-    PTB->PDDR &= ~(1 << ROW4);
-              ~~ ^~~~~~~~~~~~
+klaw4x4.c(19): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+    PTA->PDDR &= ~(1<<5 | 1<<7 | 1<<6);   // Wiersze jako wejścia
+              ~~ ^~~~~~~~~~~~~~~~~~~~~
+klaw4x4.c(20): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+    PTB->PDDR &= ~(1<<0);                  // Wiersze jako wejścia
+              ~~ ^~~~~~~
 2 warnings generated.
 compiling klaw4x4.c...
 linking...
-Program Size: Code=1454 RO-data=234 RW-data=4 ZI-data=368  
+Program Size: Code=1490 RO-data=230 RW-data=4 ZI-data=368  
 ".\ProjektTMP2.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -65,7 +65,7 @@ Package Vendor: Keil
    * Component: Keil::Device:Startup:1.0.0
       Source file:   Device\Source\ARM\startup_MKL05Z4.s
       Source file:   Device\Source\system_MKL05Z4.c
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

@@ -1,21 +1,14 @@
-#ifndef KLAW_H
-#define KLAW_H
+#ifndef KLAW4X4_H
+#define KLAW4X4_H
 
-#include "frdm_bsp.h"
+#include "MKL05Z4.h"
 
-// Definicje pinów dla wierszy klawiatury
-#define ROW1 5  // PTA5 jako R1
-#define ROW2 7  // PTA7 jako R2
-#define ROW3 6  // PTA6 jako R3
-#define ROW4 0  // PTB0 jako R4
-
-// Definicje pinów dla kolumn klawiatury
-#define COL1 6  // PTB6 jako C1
-#define COL2 7  // PTB7 jako C2
-#define COL3 10 // PTB10 jako C3
-#define COL4 11 // PTB11 jako C4
+// Maski używane do identyfikacji wierszy i kolumn na porcie A
+#define PTA5_8_MASK_IN_ROWS    0x000001E0
+#define PTA9_12_MASK_OUT_COLS  0x00001E00
+#define SET_PORTA              0x00001FE0
 
 void Klaw_Init(void);
 char Klaw_Read(void);
 
-#endif  /* KLAW_H */
+#endif // KLAW4X4_H
