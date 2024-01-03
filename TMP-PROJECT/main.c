@@ -4,19 +4,20 @@
 
 typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
-// Definiowanie true i false dla kompatybilności
+// Definiowanie wartości logicznych
 #define true 1
 #define false 0
 
-// Prototyp funkcji konwersji liczby na ciąg znaków
-static void intToStr(int num, char* str);
+static void floatToStr(float num, char* str);
 
 int main(void) {
     char buffer[16];
-    int currentNumber = 0;
-    int storedNumber = 0;
+    float currentNumber = 0.0f;
+    float storedNumber = 0.0f;
     Operation currentOperation = NONE;
-    int key_pressed = false; // Używamy int zamiast bool
+    int key_pressed = false;  
+    int decimalEntered = false;
+    float decimalMultiplier = 0.1f;  // Deklaracja zmiennej
 
     Klaw_Init();
     LCD1602_Init();
@@ -29,13 +30,22 @@ int main(void) {
             key_pressed = true;
 
             if (key >= '0' && key <= '9') {
-                currentNumber = currentNumber * 10 + (key - '0');
-                intToStr(currentNumber, buffer);
+                if (!decimalEntered) {
+                    currentNumber = currentNumber * 10.0f + (key - '0');
+                } else {
+                    currentNumber += (key - '0') * decimalMultiplier;
+                    decimalMultiplier *= 0.1f;
+                }
+                floatToStr(currentNumber, buffer);
                 LCD1602_ClearAll();
                 LCD1602_Print(buffer);
+            } else if (key == '.') {
+                decimalEntered = true;
             } else if (key == '+' || key == '-' || key == '*' || key == '/') {
                 storedNumber = currentNumber;
-                currentNumber = 0;
+                currentNumber = 0.0f;
+                decimalEntered = false;
+                decimalMultiplier = 0.1f;
                 switch (key) {
                     case '+': currentOperation = ADD; break;
                     case '-': currentOperation = SUBTRACT; break;
@@ -48,63 +58,54 @@ int main(void) {
                     case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
                     case MULTIPLY: currentNumber *= storedNumber; break;
                     case DIVIDE:
-                        if (currentNumber != 0) currentNumber = storedNumber / currentNumber;
-                        else LCD1602_Print("Error"); // Error handling for division by zero
+                        if (currentNumber != 0.0f) currentNumber = storedNumber / currentNumber;
+                        else LCD1602_Print("Error");
                         break;
-                    case NONE: break; // Obsługa przypadku NONE
+                    default: break;
                 }
-                intToStr(currentNumber, buffer);
+                floatToStr(currentNumber, buffer);
                 LCD1602_ClearAll();
                 LCD1602_Print(buffer);
                 currentOperation = NONE;
+                decimalEntered = false;
+                decimalMultiplier = 0.1f;
+            } else if (key == 'C') {
+                currentNumber = 0.0f;
+                storedNumber = 0.0f;
+                currentOperation = NONE;
+                decimalEntered = false;
+                decimalMultiplier = 0.1f;
+                LCD1602_ClearAll();
             }
-            // Implementacja panelu dotykowego 'C' będzie tutaj
         } else if (key == '\0') {
             key_pressed = false;
         }
 
-        // Krótkie opóźnienie dla debouncing
-        for (int i = 0; i < 10000; i++) {
-            // Proste opóźnienie; dostosuj wartość i = 10000, jeśli jest to konieczne
-        }
+        for (int i = 0; i < 10000; i++) {} // Debouncing delay
     }
 }
-// Funkcja intToStr
-static void intToStr(int num, char* str) {
+
+static void floatToStr(float num, char* str) {
+    int intPart = (int)num;
+    int decimalPart = (int)((num - (float)intPart) * 100);
+
+    if (decimalPart < 0) decimalPart = -decimalPart;
+
     int i = 0;
-    int isNegative = 0; // Zamiast typu bool używamy int
+    do {
+        int digit = intPart % 10;
+        str[i++] = '0' + digit;
+        intPart /= 10;
+    } while (intPart > 0);
 
-    if (num == 0) {
-        str[i++] = '0';
-        str[i] = '\0';
-        return;
+    for (int j = 0; j < i / 2; ++j) {
+        char temp = str[j];
+        str[j] = str[i - 1 - j];
+        str[i - 1 - j] = temp;
     }
 
-    if (num < 0) {
-        isNegative = 1; // Zamiast 'true' używamy 1
-        num = -num;
-    }
-
-    while (num != 0) {
-        int rem = num % 10;
-        str[i++] = (char)(rem + '0'); // Dodajemy jawne rzutowanie
-        num = num / 10;
-    }
-
-    if (isNegative) {
-        str[i++] = '-';
-    }
-
+    str[i++] = '.';
+    str[i++] = '0' + (decimalPart / 10);
+    str[i++] = '0' + (decimalPart % 10);
     str[i] = '\0';
-
-    // Odwrócenie ciągu znaków
-    int start = 0;
-    int end = i - 1;
-    while (start < end) {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        start++;
-        end--;
-    }
 }
