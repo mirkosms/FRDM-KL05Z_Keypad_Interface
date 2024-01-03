@@ -8,7 +8,7 @@ int main(void) {
     Klaw_Init();       // Inicjalizacja klawiatury
     LCD1602_Init();    // Inicjalizacja wyświetlacza LCD
     LCD1602_ClearAll(); // Czyszczenie wyświetlacza
-
+    
     while(1) {
         char key = Klaw_Read(); // Odczytanie klawisza
 
