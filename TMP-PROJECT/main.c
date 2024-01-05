@@ -8,7 +8,7 @@ typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 #define false 0
 #define DEBOUNCE_COUNT 5 // Liczba odczytów dla potwierdzenia naciśnięcia
 
-static void floatToStr(float num, char* str);
+static void doubleToStr(double num, char* str);
 static void processKey(char key);
 
 volatile char lastKey = '\0';
@@ -59,12 +59,12 @@ static void processKey(char key) {
             currentNumber += (key - '0') * decimalMultiplier;
             decimalMultiplier *= 0.1f;
         }
-        floatToStr(currentNumber, buffer);
+        doubleToStr(currentNumber, buffer);
         LCD1602_ClearAll();
         LCD1602_Print(buffer);
     } else if (key == '.') {
         decimalEntered = true;
-        floatToStr(currentNumber, buffer);
+        doubleToStr(currentNumber, buffer);
         strcat(buffer, ".");
         LCD1602_ClearAll();
         LCD1602_Print(buffer);
@@ -92,7 +92,7 @@ static void processKey(char key) {
                 break;
             default: break;
         }
-        floatToStr(currentNumber, buffer);
+        doubleToStr(currentNumber, buffer);
         LCD1602_ClearAll();
         LCD1602_Print(buffer);
         currentOperation = NONE;
@@ -102,16 +102,11 @@ static void processKey(char key) {
     // else if (key == 'C') { ... } - Czeka na implementację na panelu dotykowym
 }
 
-
-
-static void floatToStr(float num, char* str) {
+static void doubleToStr(double num, char* str) {
     int intPart = (int)num;
-    int decimalPart = (int)((num - (float)intPart) * 100);
+    int decimalPart = (int)((num - (double)intPart) * 100);
 
-    if (decimalPart < 0) {
-        decimalPart = -decimalPart; // Zapewnienie dodatniości
-    }
-
+    // Konwersja części całkowitej na string
     int i = 0;
     do {
         int digit = intPart % 10;
@@ -126,18 +121,19 @@ static void floatToStr(float num, char* str) {
         str[i - 1 - j] = temp;
     }
 
-    // Dodanie części dziesiętnej tylko wtedy, gdy jest to konieczne
+    // Dodanie części dziesiętnej
     if (decimalPart > 0) {
         str[i++] = '.';
-        if (decimalPart % 10 == 0) { // Jeśli tylko jedna znacząca cyfra
-            str[i++] = '0' + (decimalPart / 10);
-        } else { // Dwie znaczące cyfry
-            str[i++] = '0' + (decimalPart / 10);
-            str[i++] = '0' + (decimalPart % 10);
+        int firstDecimalDigit = decimalPart / 10;
+        int secondDecimalDigit = decimalPart % 10;
+        
+        if (firstDecimalDigit != 0 || secondDecimalDigit != 0) {
+            str[i++] = '0' + firstDecimalDigit;
+            if (secondDecimalDigit != 0) {
+                str[i++] = '0' + secondDecimalDigit;
+            }
         }
     }
 
     str[i] = '\0';
 }
-
-

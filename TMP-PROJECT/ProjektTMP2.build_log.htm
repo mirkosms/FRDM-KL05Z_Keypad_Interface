@@ -63,37 +63,43 @@ volatile float decimalMultiplier = 0.1f;
 main.c(19): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 volatile float decimalMultiplier = 0.1f;
          ^
-main.c(68): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
+main.c(34): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
 void SysTick_Handler(void) {
      ^
-main.c(68): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(34): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void SysTick_Handler(void) {
 ^
 static 
-main.c(102): warning: implicitly declaring library function 'strcat' with type 'char *(char *, const char *)' [-Wimplicit-function-declaration]
+main.c(62): warning: implicit conversion increases floating-point precision: 'volatile float' to 'double' [-Wdouble-promotion]
+        doubleToStr(currentNumber, buffer);
+        ~~~~~~~~~~~ ^~~~~~~~~~~~~
+main.c(67): warning: implicit conversion increases floating-point precision: 'volatile float' to 'double' [-Wdouble-promotion]
+        doubleToStr(currentNumber, buffer);
+        ~~~~~~~~~~~ ^~~~~~~~~~~~~
+main.c(68): warning: implicitly declaring library function 'strcat' with type 'char *(char *, const char *)' [-Wimplicit-function-declaration]
         strcat(buffer, ".");
         ^
-main.c(102): note: include the header <string.h> or explicitly provide a declaration for 'strcat'
-main.c(117): warning: enumeration value 'NONE' not explicitly handled in switch [-Wswitch-enum]
+main.c(68): note: include the header <string.h> or explicitly provide a declaration for 'strcat'
+main.c(83): warning: enumeration value 'NONE' not explicitly handled in switch [-Wswitch-enum]
         switch (currentOperation) {
                 ^
-main.c(152): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(95): warning: implicit conversion increases floating-point precision: 'volatile float' to 'double' [-Wdouble-promotion]
+        doubleToStr(currentNumber, buffer);
+        ~~~~~~~~~~~ ^~~~~~~~~~~~~
+main.c(113): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
         str[i++] = '0' + digit;
                  ~ ~~~~^~~~~~~
-main.c(167): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
-            str[i++] = '0' + (decimalPart / 10);
-                     ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-main.c(169): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
-            str[i++] = '0' + (decimalPart / 10);
-                     ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-main.c(170): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
-            str[i++] = '0' + (decimalPart % 10);
-                     ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-13 warnings generated.
+main.c(131): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+            str[i++] = '0' + firstDecimalDigit;
+                     ~ ~~~~^~~~~~~~~~~~~~~~~~~
+main.c(133): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+                str[i++] = '0' + secondDecimalDigit;
+                         ~ ~~~~^~~~~~~~~~~~~~~~~~~~
+15 warnings generated.
 compiling main.c...
 linking...
-Program Size: Code=4116 RO-data=308 RW-data=12 ZI-data=392  
-".\ProjektTMP2.axf" - 0 Error(s), 13 Warning(s).
+Program Size: Code=5800 RO-data=308 RW-data=12 ZI-data=392  
+".\ProjektTMP2.axf" - 0 Error(s), 15 Warning(s).
 
 <h2>Software Packages used:</h2>
 
