@@ -89,21 +89,23 @@ static void processKey(char key) {
         LCD1602_ClearAll();
         LCD1602_Print(displayString);
     } else if (key == '=') {
-        switch (currentOperation) {
-            case ADD: currentNumber += storedNumber; break;
-            case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
-            case MULTIPLY: currentNumber *= storedNumber; break;
-            case DIVIDE:
-                if (currentNumber != 0.0) 
-                    currentNumber = storedNumber / currentNumber;
-                else 
-                    LCD1602_Print("Error");
-                break;
-            default: break;
+        if (currentOperation == DIVIDE && currentNumber == 0.0) {
+            LCD1602_ClearAll();
+            LCD1602_Print("N/D");  // Wyświetlenie komunikatu o błędzie dzielenia przez zero
+        } else {
+            switch (currentOperation) {
+                case ADD: currentNumber += storedNumber; break;
+                case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
+                case MULTIPLY: currentNumber *= storedNumber; break;
+                case DIVIDE: 
+                    currentNumber = storedNumber / currentNumber; 
+                    break;
+                default: break;
+            }
+            doubleToStr(currentNumber, buffer);
+            LCD1602_ClearAll();
+            LCD1602_Print(buffer);
         }
-        doubleToStr(currentNumber, buffer);
-        LCD1602_ClearAll();
-        LCD1602_Print(buffer);
         currentOperation = NONE;
         decimalEntered = false;
         decimalMultiplier = 0.1;
