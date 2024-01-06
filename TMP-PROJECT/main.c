@@ -2,6 +2,7 @@
 #include "klaw4x4.h"
 #include "lcd1602.h"
 #include "tsi.h"
+#include <string.h>
 
 typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
@@ -11,14 +12,12 @@ typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
 static void doubleToStr(double num, char* str);
 static void processKey(char key);
-
-volatile char lastKey = '\0';
-volatile double currentNumber = 0.0;
-volatile double storedNumber = 0.0;
-volatile double decimalMultiplier = 0.1;
-volatile Operation currentOperation = NONE;
-volatile int decimalEntered = false;
-volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
+static volatile double currentNumber = 0.0;
+static volatile double storedNumber = 0.0;
+static volatile double decimalMultiplier = 0.1;
+static volatile Operation currentOperation = NONE;
+static volatile int decimalEntered = false;
+static volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
 
 int main(void) {
     Klaw_Init();
@@ -66,7 +65,7 @@ static void processKey(char key) {
     char buffer[16];
     char displayString[2] = {key, '\0'};
 
-    if (key == '-' && currentNumber == 0.0f && !decimalEntered && currentOperation == NONE) {
+    if (key == '-' && currentNumber == 0.0 && !decimalEntered && currentOperation == NONE) {
         isNegative = true;
         LCD1602_ClearAll();
         LCD1602_Print("-"); // Wyświetlenie minusa
@@ -104,26 +103,25 @@ static void processKey(char key) {
         LCD1602_ClearAll();
         LCD1602_Print(displayString);
     } else if (key == '=') {
-        switch (currentOperation) {
-            case ADD: currentNumber += storedNumber; break;
-            case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
-            case MULTIPLY: currentNumber *= storedNumber; break;
-            case DIVIDE:
-                if (currentNumber != 0.0) 
-                    currentNumber = storedNumber / currentNumber;
-                else 
-                    LCD1602_Print("Error");
-                break;
-            default: break;
+        if (currentOperation == DIVIDE && currentNumber == 0.0) {
+            LCD1602_ClearAll();
+            LCD1602_Print("Error"); // Obsługa dzielenia przez zero
+        } else {
+            switch (currentOperation) {
+                case ADD: currentNumber += storedNumber; break;
+                case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
+                case MULTIPLY: currentNumber *= storedNumber; break;
+                case DIVIDE: currentNumber = storedNumber / currentNumber; break;
+                default: break;
+            }
+            doubleToStr(currentNumber, buffer);
+            LCD1602_ClearAll();
+            LCD1602_Print(buffer);
         }
-        doubleToStr(currentNumber, buffer);
-        LCD1602_ClearAll();
-        LCD1602_Print(buffer);
         currentOperation = NONE;
         decimalEntered = false;
         decimalMultiplier = 0.1;
-         }
-
+    }
 }
 
 static void doubleToStr(double num, char* str) {
@@ -159,7 +157,7 @@ static void doubleToStr(double num, char* str) {
         str[i++] = '.';
         int firstDecimalDigit = decimalPart / 10;
         int secondDecimalDigit = decimalPart % 10;
-        
+
         if (firstDecimalDigit != 0 || secondDecimalDigit != 0) {
             str[i++] = '0' + firstDecimalDigit;
             if (secondDecimalDigit != 0) {
