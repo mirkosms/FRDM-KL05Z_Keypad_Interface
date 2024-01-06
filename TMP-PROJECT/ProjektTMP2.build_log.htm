@@ -27,85 +27,88 @@ Project File Date:  01/02/2024
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'FRDM KL05ZJ'
-main.c(14): warning: no previous extern declaration for non-static variable 'lastKey' [-Wmissing-variable-declarations]
+main.c(15): warning: no previous extern declaration for non-static variable 'lastKey' [-Wmissing-variable-declarations]
 volatile char lastKey = '\0';
               ^
-main.c(14): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+main.c(15): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 volatile char lastKey = '\0';
          ^
-main.c(15): warning: no previous extern declaration for non-static variable 'currentNumber' [-Wmissing-variable-declarations]
+main.c(16): warning: no previous extern declaration for non-static variable 'currentNumber' [-Wmissing-variable-declarations]
 volatile double currentNumber = 0.0;
-                ^
-main.c(15): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-volatile double currentNumber = 0.0;
-         ^
-main.c(16): warning: no previous extern declaration for non-static variable 'storedNumber' [-Wmissing-variable-declarations]
-volatile double storedNumber = 0.0;
                 ^
 main.c(16): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-volatile double storedNumber = 0.0;
+volatile double currentNumber = 0.0;
          ^
-main.c(17): warning: no previous extern declaration for non-static variable 'decimalMultiplier' [-Wmissing-variable-declarations]
-volatile double decimalMultiplier = 0.1;
+main.c(17): warning: no previous extern declaration for non-static variable 'storedNumber' [-Wmissing-variable-declarations]
+volatile double storedNumber = 0.0;
                 ^
 main.c(17): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile double storedNumber = 0.0;
+         ^
+main.c(18): warning: no previous extern declaration for non-static variable 'decimalMultiplier' [-Wmissing-variable-declarations]
+volatile double decimalMultiplier = 0.1;
+                ^
+main.c(18): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 volatile double decimalMultiplier = 0.1;
          ^
-main.c(18): warning: no previous extern declaration for non-static variable 'currentOperation' [-Wmissing-variable-declarations]
+main.c(19): warning: no previous extern declaration for non-static variable 'currentOperation' [-Wmissing-variable-declarations]
 volatile Operation currentOperation = NONE;
                    ^
-main.c(18): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+main.c(19): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 volatile Operation currentOperation = NONE;
          ^
-main.c(19): warning: no previous extern declaration for non-static variable 'decimalEntered' [-Wmissing-variable-declarations]
+main.c(20): warning: no previous extern declaration for non-static variable 'decimalEntered' [-Wmissing-variable-declarations]
 volatile int decimalEntered = false;
-             ^
-main.c(19): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-volatile int decimalEntered = false;
-         ^
-main.c(20): warning: no previous extern declaration for non-static variable 'isNegative' [-Wmissing-variable-declarations]
-volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
              ^
 main.c(20): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+volatile int decimalEntered = false;
+         ^
+main.c(21): warning: no previous extern declaration for non-static variable 'isNegative' [-Wmissing-variable-declarations]
+volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
+             ^
+main.c(21): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
          ^
-main.c(34): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
+main.c(49): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
 void SysTick_Handler(void) {
      ^
-main.c(34): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(49): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void SysTick_Handler(void) {
 ^
 static 
-main.c(54): warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
+main.c(69): warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
     if (key == '-' && currentNumber == 0.0f && !decimalEntered && currentOperation == NONE) {
                                     ~~ ^~~~
-main.c(77): warning: implicitly declaring library function 'strcat' with type 'char *(char *, const char *)' [-Wimplicit-function-declaration]
+main.c(92): warning: implicitly declaring library function 'strcat' with type 'char *(char *, const char *)' [-Wimplicit-function-declaration]
         strcat(buffer, ".");
         ^
-main.c(77): note: include the header <string.h> or explicitly provide a declaration for 'strcat'
-main.c(96): warning: enumeration value 'NONE' not explicitly handled in switch [-Wswitch-enum]
-            switch (currentOperation) {
-                    ^
-main.c(117): warning: declaration shadows a variable in the global scope [-Wshadow]
+main.c(92): note: include the header <string.h> or explicitly provide a declaration for 'strcat'
+main.c(107): warning: enumeration value 'NONE' not explicitly handled in switch [-Wswitch-enum]
+        switch (currentOperation) {
+                ^
+main.c(130): warning: declaration shadows a variable in the global scope [-Wshadow]
     int isNegative = 0;
         ^
-main.c(20): note: previous declaration is here
+main.c(21): note: previous declaration is here
 volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
              ^
-main.c(134): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(147): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
         str[i++] = '0' + digit;
                  ~ ~~~~^~~~~~~
-main.c(151): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(164): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
             str[i++] = '0' + firstDecimalDigit;
                      ~ ~~~~^~~~~~~~~~~~~~~~~~~
-main.c(153): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
+main.c(166): warning: implicit conversion loses integer precision: 'int' to 'char' [-Wimplicit-int-conversion]
                 str[i++] = '0' + secondDecimalDigit;
                          ~ ~~~~^~~~~~~~~~~~~~~~~~~~
-15 warnings generated.
+main.c(172): warning: no newline at end of file [-Wnewline-eof]
+}
+ ^
+16 warnings generated.
 compiling main.c...
 linking...
-Program Size: Code=6386 RO-data=374 RW-data=20 ZI-data=408  
-".\ProjektTMP2.axf" - 0 Error(s), 15 Warning(s).
+Program Size: Code=6818 RO-data=374 RW-data=20 ZI-data=408  
+".\ProjektTMP2.axf" - 0 Error(s), 16 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -133,7 +136,7 @@ Package Vendor: Keil
    * Component: Keil::Device:Startup:1.0.0
       Source file:   Device\Source\ARM\startup_MKL05Z4.s
       Source file:   Device\Source\system_MKL05Z4.c
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

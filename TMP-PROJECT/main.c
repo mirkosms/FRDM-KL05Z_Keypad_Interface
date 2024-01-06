@@ -1,6 +1,7 @@
 #include "frdm_bsp.h"
 #include "klaw4x4.h"
 #include "lcd1602.h"
+#include "tsi.h"
 
 typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
@@ -23,11 +24,25 @@ int main(void) {
     Klaw_Init();
     LCD1602_Init();
     LCD1602_ClearAll();
-
+    TSI_Init();  // Inicjalizacja TSI
     SysTick_Config(SystemCoreClock / 100);
 
     while (1) {
-        // Pętla może pozostać pusta
+        // Odczyt wartości suwaka TSI
+        uint8_t sliderValue = TSI_ReadSlider();
+
+        // Resetowanie kalkulatora, jeśli panel TSI zostanie dotknięty
+        if (sliderValue > 0) {
+            currentNumber = 0.0;
+            storedNumber = 0.0;
+            decimalMultiplier = 0.1;
+            currentOperation = NONE;
+            decimalEntered = false;
+            isNegative = false;
+
+            LCD1602_ClearAll();
+            LCD1602_Print("0"); // Wyświetlenie 0 na ekranie
+        }
     }
 }
 
@@ -89,28 +104,26 @@ static void processKey(char key) {
         LCD1602_ClearAll();
         LCD1602_Print(displayString);
     } else if (key == '=') {
-        if (currentOperation == DIVIDE && currentNumber == 0.0) {
-            LCD1602_ClearAll();
-            LCD1602_Print("N/D");  // Wyświetlenie komunikatu o błędzie dzielenia przez zero
-        } else {
-            switch (currentOperation) {
-                case ADD: currentNumber += storedNumber; break;
-                case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
-                case MULTIPLY: currentNumber *= storedNumber; break;
-                case DIVIDE: 
-                    currentNumber = storedNumber / currentNumber; 
-                    break;
-                default: break;
-            }
-            doubleToStr(currentNumber, buffer);
-            LCD1602_ClearAll();
-            LCD1602_Print(buffer);
+        switch (currentOperation) {
+            case ADD: currentNumber += storedNumber; break;
+            case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
+            case MULTIPLY: currentNumber *= storedNumber; break;
+            case DIVIDE:
+                if (currentNumber != 0.0) 
+                    currentNumber = storedNumber / currentNumber;
+                else 
+                    LCD1602_Print("Error");
+                break;
+            default: break;
         }
+        doubleToStr(currentNumber, buffer);
+        LCD1602_ClearAll();
+        LCD1602_Print(buffer);
         currentOperation = NONE;
         decimalEntered = false;
         decimalMultiplier = 0.1;
-    }
-    // else if (key == 'C') { ... } // Czeka na implementację na panelu dotykowym
+         }
+
 }
 
 static void doubleToStr(double num, char* str) {
