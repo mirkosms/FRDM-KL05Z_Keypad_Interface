@@ -6,28 +6,28 @@ typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
 #define true 1
 #define false 0
-#define DEBOUNCE_COUNT 5 // Liczba odczytów dla potwierdzenia naciśnięcia
+#define DEBOUNCE_COUNT 5
 
 static void doubleToStr(double num, char* str);
 static void processKey(char key);
 
 volatile char lastKey = '\0';
-volatile float currentNumber = 0.0f;
-volatile float storedNumber = 0.0f;
+volatile double currentNumber = 0.0;
+volatile double storedNumber = 0.0;
+volatile double decimalMultiplier = 0.1;
 volatile Operation currentOperation = NONE;
 volatile int decimalEntered = false;
-volatile float decimalMultiplier = 0.1f;
+volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
 
 int main(void) {
     Klaw_Init();
     LCD1602_Init();
     LCD1602_ClearAll();
 
-    // Konfiguracja SysTick
-    SysTick_Config(SystemCoreClock / 100); // Przykład dla przerwania co 1 ms
+    SysTick_Config(SystemCoreClock / 100);
 
     while (1) {
-        // Pętla może pozostać pusta lub zawierać logikę niezwiązaną z przerwaniami
+        // Pętla może pozostać pusta
     }
 }
 
@@ -42,22 +42,31 @@ void SysTick_Handler(void) {
     } else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
         debounce_counter++;
         if (debounce_counter == DEBOUNCE_COUNT) {
-            processKey(key); // Przetwarzanie naciśniętego klawisza po debouncingu
+            processKey(key);
         }
     }
 }
 
-
 static void processKey(char key) {
     char buffer[16];
-    char displayString[2] = {key, '\0'}; // Tworzy ciąg znaków z pojedynczego klawisza
+    char displayString[2] = {key, '\0'};
 
-    if (key >= '0' && key <= '9') {
+    if (key == '-' && currentNumber == 0.0f && !decimalEntered && currentOperation == NONE) {
+        isNegative = true;
+        LCD1602_ClearAll();
+        LCD1602_Print("-"); // Wyświetlenie minusa
+    } else if (key >= '0' && key <= '9') {
+        double numValue = (key - '0');
+        if (isNegative) {
+            numValue = -numValue;
+            isNegative = false;
+        }
+
         if (!decimalEntered) {
-            currentNumber = currentNumber * 10.0f + (key - '0');
+            currentNumber = currentNumber * 10.0 + numValue;
         } else {
-            currentNumber += (key - '0') * decimalMultiplier;
-            decimalMultiplier *= 0.1f;
+            currentNumber += numValue * decimalMultiplier;
+            decimalMultiplier *= 0.1;
         }
         doubleToStr(currentNumber, buffer);
         LCD1602_ClearAll();
@@ -70,22 +79,22 @@ static void processKey(char key) {
         LCD1602_Print(buffer);
     } else if (key == '+' || key == '-' || key == '*' || key == '/') {
         storedNumber = currentNumber;
-        currentNumber = 0.0f;
+        currentNumber = 0.0;
         decimalEntered = false;
-        decimalMultiplier = 0.1f;
+        decimalMultiplier = 0.1;
         currentOperation = (key == '+') ? ADD :
                            (key == '-') ? SUBTRACT :
                            (key == '*') ? MULTIPLY : DIVIDE;
 
         LCD1602_ClearAll();
-        LCD1602_Print(displayString); // Wyświetla znak operacji na wyświetlaczu
+        LCD1602_Print(displayString);
     } else if (key == '=') {
         switch (currentOperation) {
             case ADD: currentNumber += storedNumber; break;
             case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
             case MULTIPLY: currentNumber *= storedNumber; break;
             case DIVIDE:
-                if (currentNumber != 0.0f) 
+                if (currentNumber != 0.0) 
                     currentNumber = storedNumber / currentNumber;
                 else 
                     LCD1602_Print("Error");
@@ -97,31 +106,40 @@ static void processKey(char key) {
         LCD1602_Print(buffer);
         currentOperation = NONE;
         decimalEntered = false;
-        decimalMultiplier = 0.1f;
+        decimalMultiplier = 0.1;
     }
-    // else if (key == 'C') { ... } - Czeka na implementację na panelu dotykowym
+    // else if (key == 'C') { ... } // Czeka na implementację na panelu dotykowym
 }
 
 static void doubleToStr(double num, char* str) {
+    int isNegative = 0;
+    if (num < 0) {
+        isNegative = 1;
+        num = -num;
+    }
+
     int intPart = (int)num;
     int decimalPart = (int)((num - (double)intPart) * 100);
 
-    // Konwersja części całkowitej na string
     int i = 0;
-    do {
-        int digit = intPart % 10;
-        str[i++] = '0' + digit;
-        intPart /= 10;
-    } while (intPart > 0);
-
-    // Odwracanie części całkowitej
-    for (int j = 0; j < i / 2; ++j) {
-        char temp = str[j];
-        str[j] = str[i - 1 - j];
-        str[i - 1 - j] = temp;
+    if (isNegative) {
+        str[i++] = '-';
     }
 
-    // Dodanie części dziesiętnej
+    int tempIntPart = intPart;
+    do {
+        int digit = tempIntPart % 10;
+        str[i++] = '0' + digit;
+        tempIntPart /= 10;
+    } while (tempIntPart > 0);
+
+    int start = isNegative ? 1 : 0;
+    for (int j = start; j < (i + start) / 2; ++j) {
+        char temp = str[j];
+        str[j] = str[i - 1 - j + start];
+        str[i - 1 - j + start] = temp;
+    }
+
     if (decimalPart > 0) {
         str[i++] = '.';
         int firstDecimalDigit = decimalPart / 10;
