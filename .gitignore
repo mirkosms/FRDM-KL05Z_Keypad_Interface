@@ -1,1 +1,8 @@
-*.axf, *.htm, *.map, *.dep, *.o
+TMP-PROJECT/JLinkLog.txt
+TMP-PROJECT/*.txt
+TMP-PROJECT/*.axf
+TMP-PROJECT/*.htm
+TMP-PROJECT/*.map
+TMP-PROJECT/*.dep
+TMP-PROJECT/*.o
+TMP-PROJECT/*.d
