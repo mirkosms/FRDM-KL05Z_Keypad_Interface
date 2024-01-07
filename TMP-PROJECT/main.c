@@ -66,35 +66,33 @@ static void processKey(char key) {
     char displayString[2] = {key, '\0'};
 
     if (key == '-' && currentNumber == 0.0 && !decimalEntered && currentOperation == NONE) {
-        isNegative = true;
+        isNegative = !isNegative;
         LCD1602_ClearAll();
-        LCD1602_Print("-"); // Wyświetlenie minusa
+        LCD1602_Print("-0");
     } else if (key >= '0' && key <= '9') {
         double numValue = (key - '0');
-        if (isNegative) {
-            numValue = -numValue;
-            isNegative = false;
-        }
-
         if (!decimalEntered) {
-            currentNumber = currentNumber * 10.0 + numValue;
+            currentNumber = currentNumber * 10.0 + (isNegative ? -numValue : numValue);
         } else {
-            currentNumber += numValue * decimalMultiplier;
+            currentNumber += (isNegative ? -numValue : numValue) * decimalMultiplier;
             decimalMultiplier *= 0.1;
         }
         doubleToStr(currentNumber, buffer);
         LCD1602_ClearAll();
         LCD1602_Print(buffer);
     } else if (key == '.') {
-        decimalEntered = true;
-        doubleToStr(currentNumber, buffer);
-        strcat(buffer, ".");
-        LCD1602_ClearAll();
-        LCD1602_Print(buffer);
+        if (!decimalEntered) {
+            decimalEntered = true;
+            doubleToStr(currentNumber, buffer);
+            strcat(buffer, ".");
+            LCD1602_ClearAll();
+            LCD1602_Print(buffer);
+        }
     } else if (key == '+' || key == '-' || key == '*' || key == '/') {
         storedNumber = currentNumber;
-        currentNumber = 0.0;
-        decimalEntered = false;
+        currentNumber = 0.0; // Resetowanie bieżącej liczby
+        decimalEntered = false; // Resetowanie wprowadzania części dziesiętnej
+        isNegative = false; // Resetowanie znaku na dodatni dla nowej liczby
         decimalMultiplier = 0.1;
         currentOperation = (key == '+') ? ADD :
                            (key == '-') ? SUBTRACT :
@@ -105,7 +103,7 @@ static void processKey(char key) {
     } else if (key == '=') {
         if (currentOperation == DIVIDE && currentNumber == 0.0) {
             LCD1602_ClearAll();
-            LCD1602_Print("Error"); // Obsługa dzielenia przez zero
+            LCD1602_Print("N/D"); // Obsługa dzielenia przez zero
         } else {
             switch (currentOperation) {
                 case ADD: currentNumber += storedNumber; break;
