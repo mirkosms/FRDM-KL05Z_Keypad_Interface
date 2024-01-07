@@ -130,13 +130,20 @@ static void doubleToStr(double num, char* str) {
     }
 
     int intPart = (int)num;
-    int decimalPart = (int)((num - (double)intPart) * 100);
+    int decimalPart = (int)((num - (double)intPart) * 100 + 0.5); // Dodanie 0.5 dla zaokrąglenia
+
+    // Obsługa przepełnienia po zaokrągleniu
+    if (decimalPart >= 100) {
+        decimalPart -= 100;
+        intPart += 1;
+    }
 
     int i = 0;
     if (isNegative) {
         str[i++] = '-';
     }
 
+    // Konwersja części całkowitej na string
     int tempIntPart = intPart;
     do {
         int digit = tempIntPart % 10;
@@ -144,6 +151,7 @@ static void doubleToStr(double num, char* str) {
         tempIntPart /= 10;
     } while (tempIntPart > 0);
 
+    // Odwrócenie ciągu znaków części całkowitej
     int start = isNegative ? 1 : 0;
     for (int j = start; j < (i + start) / 2; ++j) {
         char temp = str[j];
@@ -151,18 +159,20 @@ static void doubleToStr(double num, char* str) {
         str[i - 1 - j + start] = temp;
     }
 
+    // Dodanie części dziesiętnej tylko jeśli różna od zera
     if (decimalPart > 0) {
         str[i++] = '.';
-        int firstDecimalDigit = decimalPart / 10;
-        int secondDecimalDigit = decimalPart % 10;
+        str[i++] = '0' + (decimalPart / 10);
+        str[i++] = '0' + (decimalPart % 10);
 
-        if (firstDecimalDigit != 0 || secondDecimalDigit != 0) {
-            str[i++] = '0' + firstDecimalDigit;
-            if (secondDecimalDigit != 0) {
-                str[i++] = '0' + secondDecimalDigit;
+        // Usuwanie niepotrzebnych zer na końcu
+        if (str[i-1] == '0') {
+            i--;
+            if (str[i-1] == '0') {
+                i -= 2; // Usuń także kropkę, jeśli obie cyfry dziesiętne to zera
             }
         }
     }
-
     str[i] = '\0';
 }
+
