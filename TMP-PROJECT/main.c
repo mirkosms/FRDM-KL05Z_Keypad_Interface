@@ -9,22 +9,12 @@
 #include <stdlib.h>
 
 // Definicje częstotliwości dla nut w skali C-dur
-#define C4_FREQ  262
-#define D4_FREQ  294
-#define E4_FREQ  330
-#define F4_FREQ  349
-#define G4_FREQ  392
-#define A4_FREQ  440
-#define B4_FREQ  494
-#define C5_FREQ  523  // Następna oktawa C
-#define D5_FREQ  587
-#define E5_FREQ  659
-#define F5_FREQ  698
-#define G5_FREQ  784
-#define A5_FREQ  880
-#define B5_FREQ  988
-#define C6_FREQ  1047 // Następna oktawa C
-#define D6_FREQ  1175
+const uint32_t noteFrequencies[] = {
+    262, 294, 330, 349, 392, 440, 494,  // C4, D4, E4, F4, G4, A4, B4
+    523, 587, 659, 698, 784, 880, 988,  // C5, D5, E5, F5, G5, A5, B5
+    1047, 1175                          // C6, D6
+};
+
 
 // Prototypy funkcji
 static void setBuzzerFrequency(uint32_t frequency);
@@ -212,27 +202,31 @@ static void doubleToStr(double num, char* str) {
 }
 
 static void playToneForKey(char key) {
+    int noteIndex = -1;
     switch(key) {
-        case '7': setBuzzerFrequency(C4_FREQ); break;
-        case '8': setBuzzerFrequency(D4_FREQ); break;
-        case '9': setBuzzerFrequency(E4_FREQ); break;
-        case '/': setBuzzerFrequency(F4_FREQ); break;
-        case '4': setBuzzerFrequency(G4_FREQ); break;
-        case '5': setBuzzerFrequency(A4_FREQ); break;
-        case '6': setBuzzerFrequency(B4_FREQ); break;
-        case '*': setBuzzerFrequency(C5_FREQ); break;
-        case '1': setBuzzerFrequency(D5_FREQ); break;
-        case '2': setBuzzerFrequency(E5_FREQ); break;
-        case '3': setBuzzerFrequency(F5_FREQ); break;
-        case '-': setBuzzerFrequency(G5_FREQ); break;
-        case '0': setBuzzerFrequency(A5_FREQ); break;
-        case '.': setBuzzerFrequency(B5_FREQ); break;
-        case '=': setBuzzerFrequency(C6_FREQ); break;
-        case '+': setBuzzerFrequency(D6_FREQ); break;
-        default: buzzerOff(); break;
+        case '7': noteIndex = 0; break;  // C4
+        case '8': noteIndex = 1; break;  // D4
+        case '9': noteIndex = 2; break;  // E4
+        case '/': noteIndex = 3; break;  // F4
+        case '4': noteIndex = 4; break;  // G4
+        case '5': noteIndex = 5; break;  // A4
+        case '6': noteIndex = 6; break;  // B4
+        case '*': noteIndex = 7; break;  // C5
+        case '1': noteIndex = 8; break;  // D5
+        case '2': noteIndex = 9; break;  // E5
+        case '3': noteIndex = 10; break; // F5
+        case '-': noteIndex = 11; break; // G5
+        case '0': noteIndex = 12; break; // A5
+        case '.': noteIndex = 13; break; // B5
+        case '=': noteIndex = 14; break; // C6
+        case '+': noteIndex = 15; break; // D6
+        default: buzzerOff(); return;
+    }
+
+    if (noteIndex >= 0) {
+        setBuzzerFrequency(noteFrequencies[noteIndex]);
     }
 }
-
 
 static void setBuzzerFrequency(uint32_t frequency) {
     // Oblicz wartość rejestrów MOD i CNV na podstawie częstotliwości
