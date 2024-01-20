@@ -3,6 +3,9 @@
 
 #include "MKL05Z4.h"
 #include "TPM.h"
+#include "lcd1602.h"
+#include "klaw4x4.h"
+#include "global.h"
 
 // Definicje częstotliwości nut
 #define C4_FREQ  262
@@ -23,10 +26,9 @@
 #define D6_FREQ  1175
 
 // Prototypy funkcji
-void initBuzzerTPM(void);
-void setBuzzerFrequency(uint32_t frequency);
-void buzzerOn(void);
-void buzzerOff(void);
-void playToneForKey(char key);
+void Buzzer_Init(void);
+void Buzzer_PlayTone(uint32_t frequency);
+void Buzzer_StopTone(void);
+void Buzzer_PlayNoteForKey(char key);
 
 #endif // BUZZER_H
