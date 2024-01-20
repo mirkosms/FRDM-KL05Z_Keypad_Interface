@@ -413,6 +413,11 @@
               <FileType>1</FileType>
               <FilePath>.\TPM.c</FilePath>
             </File>
+            <File>
+              <FileName>joystick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\joystick.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

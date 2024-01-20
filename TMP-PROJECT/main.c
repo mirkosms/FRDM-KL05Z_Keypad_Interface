@@ -1,9 +1,10 @@
 #include "MKL05Z4.h"
 #include "frdm_bsp.h"
 #include "lcd1602.h"
-#include "klaw4x4.h"  // Upewnij się, że ta biblioteka posiada odpowiednie funkcje do obsługi klawiatury
+#include "klaw4x4.h"
 #include "TPM.h"
 #include "tsi.h"
+#include "joystick.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -37,30 +38,41 @@ static volatile double decimalMultiplier = 0.1;
 static volatile Operation currentOperation = NONE;
 static volatile int decimalEntered = false;
 static volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
+static volatile int buzzerEnabled = 1; // Zmienna do kontroli stanu buzzera
 
 int main(void) {
+    // Inicjalizacja urządzeń
     Klaw_Init();
     LCD1602_Init();
     LCD1602_ClearAll();
-    TSI_Init();  // Inicjalizacja TSI
-    initBuzzerTPM();  // Inicjalizacja TPM dla buzzera
+    TSI_Init();
+    initBuzzerTPM();
+    Joystick_Init();
     SysTick_Config(SystemCoreClock / 100);
 
     while (1) {
-        // Odczyt wartości suwaka TSI
+        // Obsługa suwaka TSI i przycisku MID joysticka
         uint8_t sliderValue = TSI_ReadSlider();
+        bool midPressed = Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN);
 
-        // Resetowanie kalkulatora, jeśli panel TSI zostanie dotknięty
-        if (sliderValue > 0) {
+        // Resetowanie kalkulatora, jeśli panel TSI lub przycisk MID zostanie dotknięty
+        if (sliderValue > 0 || midPressed) {
             currentNumber = 0.0;
             storedNumber = 0.0;
             decimalMultiplier = 0.1;
             currentOperation = NONE;
             decimalEntered = false;
             isNegative = false;
-
             LCD1602_ClearAll();
-            LCD1602_Print("0"); // Wyświetlenie 0 na ekranie
+            LCD1602_Print("0");
+        }
+
+        // Obsługa przycisku SET joysticka do włączania/wyłączania buzzera
+        if (Joystick_TestPin(JOYSTICK_SET_PORT, JOYSTICK_SET_PIN)) {
+            buzzerEnabled = !buzzerEnabled; // Przełączanie stanu buzzera
+            LCD1602_ClearAll();
+            LCD1602_Print(buzzerEnabled ? "Buzzer ON" : "Buzzer OFF");
+            DELAY(500); // Krótka pauza na wyświetlenie komunikatu
         }
     }
 }
@@ -73,15 +85,17 @@ void SysTick_Handler(void) {
     if (key != last_key) {
         debounce_counter = 0;
         last_key = key;
-        buzzerOff();  // Wyłącz buzzer przy zmianie klawisza
     } else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
         debounce_counter++;
         if (debounce_counter == DEBOUNCE_COUNT) {
-            playToneForKey(key);
+            // Odtwarzanie dźwięku tylko gdy buzzer włączony i klawisz naciśnięty
+            if (buzzerEnabled) {
+                playToneForKey(key);
+            }
             processKey(key);
         }
     } else if (key == 0) {
-        buzzerOff();  // Wyłącz buzzer, gdy żaden klawisz nie jest naciśnięty
+        buzzerOff(); // Wyłącz buzzer, gdy żaden klawisz nie jest naciśnięty
     }
 }
 
@@ -89,6 +103,10 @@ void SysTick_Handler(void) {
 static void processKey(char key) {
     char buffer[16];
     char displayString[2] = {key, '\0'};
+    // Odtwarzanie dźwięku tylko gdy buzzer włączony
+    if (buzzerEnabled) {
+        playToneForKey(key);
+    }
 
     if (key == '-' && currentNumber == 0.0 && !decimalEntered && currentOperation == NONE) {
         isNegative = !isNegative;
@@ -204,20 +222,20 @@ static void doubleToStr(double num, char* str) {
 static void playToneForKey(char key) {
     int noteIndex = -1;
     switch(key) {
-        case '7': noteIndex = 0; break;  // C4
-        case '8': noteIndex = 1; break;  // D4
-        case '9': noteIndex = 2; break;  // E4
+        case '1': noteIndex = 0; break;  // C4
+        case '2': noteIndex = 1; break;  // D4
+        case '3': noteIndex = 2; break;  // E4
         case '/': noteIndex = 3; break;  // F4
         case '4': noteIndex = 4; break;  // G4
         case '5': noteIndex = 5; break;  // A4
         case '6': noteIndex = 6; break;  // B4
         case '*': noteIndex = 7; break;  // C5
-        case '1': noteIndex = 8; break;  // D5
-        case '2': noteIndex = 9; break;  // E5
-        case '3': noteIndex = 10; break; // F5
+        case '7': noteIndex = 8; break;  // D5
+        case '8': noteIndex = 9; break;  // E5
+        case '9': noteIndex = 10; break; // F5
         case '-': noteIndex = 11; break; // G5
-        case '0': noteIndex = 12; break; // A5
-        case '.': noteIndex = 13; break; // B5
+        case '.': noteIndex = 12; break; // A5
+        case '0': noteIndex = 13; break; // B5
         case '=': noteIndex = 14; break; // C6
         case '+': noteIndex = 15; break; // D6
         default: buzzerOff(); return;
