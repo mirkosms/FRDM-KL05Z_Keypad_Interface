@@ -15,9 +15,13 @@
 // Prototypy funkcji
 static void doubleToStr(double num, char* str);
 static void processKey(char key);
+void handleSetButton(void);
 
 Mode currentMode = DEFAULT;  // Ustaw domyślny tryb na DEFAULT
+static volatile int buzzerEnabled = 1; // Zmienna do kontroli stanu buzzera
+volatile uint32_t tickCount = 0;
 volatile uint32_t lastModeChangeTick = 0;
+volatile uint32_t lastSetButtonTick = 0;
 
 typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
@@ -31,8 +35,7 @@ static volatile double decimalMultiplier = 0.1;
 static volatile Operation currentOperation = NONE;
 static volatile int decimalEntered = false;
 static volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
-static volatile int buzzerEnabled = 1; // Zmienna do kontroli stanu buzzera
-volatile uint32_t tickCount = 0;
+
 void changeMode(Mode newMode) {
     currentMode = newMode;
     lastModeChangeTick = tickCount;  // Zapisz czas zmiany trybu
@@ -57,12 +60,11 @@ int main(void) {
     SysTick_Config(SystemCoreClock / 100);
 
     while (1) {
-        // Obsługa suwaka TSI i przycisku MID joysticka
         uint8_t sliderValue = TSI_ReadSlider();
         bool midPressed = Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN);
 
-        // Resetowanie kalkulatora, jeśli panel TSI lub przycisk MID zostanie dotknięty
         if (sliderValue > 0 || midPressed) {
+            // Resetowanie kalkulatora
             currentNumber = 0.0;
             storedNumber = 0.0;
             decimalMultiplier = 0.1;
@@ -73,31 +75,17 @@ int main(void) {
             LCD1602_Print("0");
         }
 
-        // Obsługa przycisku LEFT - przełączanie do trybu MUSIC
         if (Joystick_TestPin(JOYSTICK_LEFT_PORT, JOYSTICK_LEFT_PIN) && tickCount - lastModeChangeTick > 500) {
             changeMode(MUSIC);
         }
 
-        // Obsługa przycisku MID - powrót do trybu DEFAULT
         if (Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN)) {
             changeMode(DEFAULT);
         }
 
         // Obsługa przycisku SET
-        if (Joystick_TestPin(JOYSTICK_SET_PORT, JOYSTICK_SET_PIN)) {
-            if (currentMode != MUSIC) {
-                buzzerEnabled = !buzzerEnabled;
-                LCD1602_ClearAll();
-                LCD1602_Print(buzzerEnabled ? "Buzzer ON" : "Buzzer OFF");
-                lastModeChangeTick = tickCount;
-            } else {
-                LCD1602_ClearAll();
-                LCD1602_Print("Brak w trybie MUSIC");
-                lastModeChangeTick = tickCount;
-            }
-        }
+        handleSetButton();
 
-        // Główna logika programu
         switch (currentMode) {
             case MUSIC:{
                 char key = Klaw_Read();
@@ -106,7 +94,6 @@ int main(void) {
                 }
                 break;
             }
-            // ... obsługa innych trybów
             case DEFAULT:
             default:
                 // Domyślny tryb pracy
@@ -118,46 +105,43 @@ int main(void) {
 void SysTick_Handler(void) {
     static char last_key = 0;
     static int debounce_counter = 0;
-    static uint32_t lastModeChangeTick = 0;
 
-    tickCount++; // Inkrementuj licznik ticków
+    tickCount++;
 
     char key = Klaw_Read();
-
-    // Debouncing klawiatury
     if (key != last_key) {
         debounce_counter = 0;
         last_key = key;
+        if (key != 0) {
+            if (currentMode == MUSIC || (currentMode == DEFAULT && buzzerEnabled)) {
+                Buzzer_PlayNoteForKey(key);
+            }
+        } else {
+            Buzzer_StopTone();
+        }
     } else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
         debounce_counter++;
-        if (debounce_counter == DEBOUNCE_COUNT) {
-            // Logika dla różnych trybów
-            if (currentMode == MUSIC) {
-                Buzzer_PlayNoteForKey(key);
-            } else if (currentMode == DEFAULT) {
-                processKey(key);
-                if (buzzerEnabled) {
-                    Buzzer_PlayNoteForKey(key);
-                }
-            }
-        }
-    } else if (key == 0) {
-        if (currentMode == DEFAULT) {
-            Buzzer_StopTone();
+        if (debounce_counter == DEBOUNCE_COUNT && currentMode == DEFAULT) {
+            processKey(key);
         }
     }
 
-    // Obsługa zmiany trybu
-    if (tickCount - lastModeChangeTick >= 500) { // 500 ticków opóźnienia
-        if (Joystick_TestPin(JOYSTICK_SET_PORT, JOYSTICK_SET_PIN)) {
+    handleSetButton();
+}
+
+void handleSetButton(void) {
+    if (Joystick_TestPin(JOYSTICK_SET_PORT, JOYSTICK_SET_PIN) && tickCount - lastSetButtonTick > 500) {
+        lastSetButtonTick = tickCount;
+        if (currentMode != MUSIC) {
             buzzerEnabled = !buzzerEnabled;
-            lastModeChangeTick = tickCount;
-            // Możesz tu dodać logikę aktualizacji wyświetlacza
+            LCD1602_ClearAll();
+            LCD1602_Print(buzzerEnabled ? "Buzzer ON" : "Buzzer OFF");
+        } else {
+            LCD1602_ClearAll();
+            LCD1602_Print("Brak w trybie MUSIC");
         }
     }
 }
-
-
 
 static void processKey(char key) {
     char buffer[16];

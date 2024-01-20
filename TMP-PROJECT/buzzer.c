@@ -5,16 +5,13 @@ extern Mode currentMode;
 // Funkcje dotyczące buzzera
 void Buzzer_Init(void) {
     PWM_Init();
+    Buzzer_StopTone(); // Zatrzymaj dźwięk na początku
 }
 
 void Buzzer_PlayTone(uint32_t frequency) {
     // Ustawienie częstotliwości dla buzzera
     TPM0->MOD = (SystemCoreClock / (64 * frequency)) - 1;
     TPM0->CONTROLS[3].CnV = (TPM0->MOD) / 2; // Ustaw wypełnienie 50%
-}
-
-void buzzerOn() {
-    TPM0->CONTROLS[3].CnV = TPM0->MOD / 2;  // 50% wypełnienia impulsu
 }
 
 void Buzzer_StopTone(void) {
@@ -47,9 +44,14 @@ void Buzzer_PlayNoteForKey(char key) {
         default: Buzzer_StopTone(); return;
     }
 
-    Buzzer_PlayTone(frequency);
-        if (key != 0 && currentMode == MUSIC) {
-        LCD1602_ClearAll();
-        LCD1602_Print(noteName);
+    if (key != 0) {
+        Buzzer_PlayTone(frequency);
+        if (currentMode == MUSIC) {
+            LCD1602_ClearAll();
+            LCD1602_Print(noteName);
+        }
+    } else {
+        Buzzer_StopTone();
     }
 }
+
