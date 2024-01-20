@@ -24,3 +24,4 @@ void Joystick_Init() {
 bool Joystick_TestPin(GPIO_Type* port, uint32_t pin) {
     return !(port->PDIR & (1 << pin));
 }
+

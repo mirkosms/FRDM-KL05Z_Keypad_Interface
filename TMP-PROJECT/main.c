@@ -5,24 +5,13 @@
 #include "TPM.h"
 #include "tsi.h"
 #include "joystick.h"
+#include "buzzer.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-// Definicje częstotliwości dla nut w skali C-dur
-const uint32_t noteFrequencies[] = {
-    262, 294, 330, 349, 392, 440, 494,  // C4, D4, E4, F4, G4, A4, B4
-    523, 587, 659, 698, 784, 880, 988,  // C5, D5, E5, F5, G5, A5, B5
-    1047, 1175                          // C6, D6
-};
-
 
 // Prototypy funkcji
-static void setBuzzerFrequency(uint32_t frequency);
-static void initBuzzerTPM(void);
-static void buzzerOn(void);
-static void buzzerOff(void);
-static void playToneForKey(char key);
 static void doubleToStr(double num, char* str);
 static void processKey(char key);
 
@@ -72,7 +61,7 @@ int main(void) {
             buzzerEnabled = !buzzerEnabled; // Przełączanie stanu buzzera
             LCD1602_ClearAll();
             LCD1602_Print(buzzerEnabled ? "Buzzer ON" : "Buzzer OFF");
-            DELAY(500); // Krótka pauza na wyświetlenie komunikatu
+            DELAY(500) // Krótka pauza na wyświetlenie komunikatu
         }
     }
 }
@@ -217,52 +206,4 @@ static void doubleToStr(double num, char* str) {
         }
     }
     str[i] = '\0';
-}
-
-static void playToneForKey(char key) {
-    int noteIndex = -1;
-    switch(key) {
-        case '1': noteIndex = 0; break;  // C4
-        case '2': noteIndex = 1; break;  // D4
-        case '3': noteIndex = 2; break;  // E4
-        case '/': noteIndex = 3; break;  // F4
-        case '4': noteIndex = 4; break;  // G4
-        case '5': noteIndex = 5; break;  // A4
-        case '6': noteIndex = 6; break;  // B4
-        case '*': noteIndex = 7; break;  // C5
-        case '7': noteIndex = 8; break;  // D5
-        case '8': noteIndex = 9; break;  // E5
-        case '9': noteIndex = 10; break; // F5
-        case '-': noteIndex = 11; break; // G5
-        case '.': noteIndex = 12; break; // A5
-        case '0': noteIndex = 13; break; // B5
-        case '=': noteIndex = 14; break; // C6
-        case '+': noteIndex = 15; break; // D6
-        default: buzzerOff(); return;
-    }
-
-    if (noteIndex >= 0) {
-        setBuzzerFrequency(noteFrequencies[noteIndex]);
-    }
-}
-
-static void setBuzzerFrequency(uint32_t frequency) {
-    // Oblicz wartość rejestrów MOD i CNV na podstawie częstotliwości
-    TPM0->MOD = (SystemCoreClock / (64 * frequency)) - 1;
-    TPM0->CONTROLS[3].CnV = (TPM0->MOD) / 2; // Ustaw wypełnienie 50%
-}
-
-static void initBuzzerTPM() {
-    // Funkcja inicjalizująca TPM dla buzzera
-    PWM_Init();
-}
-
-static void buzzerOn() {
-    // Włączenie buzzera (sygnał PWM)
-    TPM0->CONTROLS[3].CnV = TPM0->MOD / 2;  // 50% wypełnienia impulsu
-}
-
-static void buzzerOff() {
-    // Wyłączenie buzzera (sygnał PWM)
-    TPM0->CONTROLS[3].CnV = 0;  // Wypełnienie impulsu 0%
 }
