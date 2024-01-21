@@ -2,7 +2,8 @@
 #define MODE_MANAGER_H
 
 // Definicja typu wyliczeniowego Mode
-typedef enum { DEFAULT, MUSIC } Mode;
+typedef enum { DEFAULT, MUSIC, COMPUTER } Mode;
+
 // Zmienna przechowująca aktualny tryb
 extern Mode currentMode;
 // Prototypy funkcji

@@ -47,6 +47,10 @@ int main(void) {
             changeMode(MUSIC);
         }
 
+        if (Joystick_TestPin(JOYSTICK_UP_PORT, JOYSTICK_UP_PIN) && tickCount - lastModeChangeTick > 500) {
+            changeMode(COMPUTER);
+        }
+
         if (Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN)) {
             changeMode(DEFAULT);
         }
@@ -62,6 +66,9 @@ int main(void) {
                 }
                 break;
             }
+            case COMPUTER:
+                // Logika dla tego trybu
+                break;
             case DEFAULT:
             default:
                 // Domyślny tryb pracy
@@ -81,7 +88,7 @@ void SysTick_Handler(void) {
         debounce_counter = 0;
         last_key = key;
         if (key != 0) {
-            if (currentMode == MUSIC || (currentMode == DEFAULT && buzzerEnabled)) {
+            if (currentMode == MUSIC || (currentMode == DEFAULT && buzzerEnabled) || (currentMode == COMPUTER && buzzerEnabled)) {
                 Buzzer_PlayNoteForKey(key);
             }
         } else {

@@ -17,6 +17,8 @@ void changeMode(Mode newMode) {
     LCD1602_ClearAll();
     if (newMode == MUSIC) {
         LCD1602_Print("Tryb MUSIC");
+    } else if (newMode == COMPUTER) {
+        LCD1602_Print("Tryb COMPUTER");
     } else if (newMode == DEFAULT) {
         LCD1602_Print("Tryb DEFAULT");
     }
