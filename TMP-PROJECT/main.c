@@ -22,6 +22,9 @@ static volatile int buzzerEnabled = 1; // Zmienna do kontroli stanu buzzera
 volatile uint32_t tickCount = 0;
 volatile uint32_t lastModeChangeTick = 0;
 volatile uint32_t lastSetButtonTick = 0;
+volatile uint32_t displayTimer = 0;
+volatile int displayState = 0;
+
 
 typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
@@ -47,6 +50,16 @@ void changeMode(Mode newMode) {
     } else if (newMode == DEFAULT) {
         LCD1602_Print("Tryb DEFAULT");
     }
+}
+
+void updateDisplay(void) {
+    if (displayState == 1 && (tickCount - displayTimer > 1000)) { // 1000 ticków opóźnienia
+        displayState = 0; // Reset stanu wyświetlacza
+        LCD1602_ClearAll();
+        LCD1602_SetCursor(0, 0);
+        LCD1602_Print("Tryb MUSIC");
+    }
+    // Możliwość dopisania koolejnych stanów
 }
 
 int main(void) {
@@ -127,6 +140,7 @@ void SysTick_Handler(void) {
     }
 
     handleSetButton();
+    updateDisplay(); // Aktualizuj stan wyświetlacza
 }
 
 void handleSetButton(void) {
@@ -137,11 +151,16 @@ void handleSetButton(void) {
             LCD1602_ClearAll();
             LCD1602_Print(buzzerEnabled ? "Buzzer ON" : "Buzzer OFF");
         } else {
+            displayState = 1; // Aktywuj stan wyświetlacza
+            displayTimer = tickCount; // Zapisz bieżący czas
             LCD1602_ClearAll();
-            LCD1602_Print("Brak w trybie MUSIC");
+            LCD1602_Print("Brak tej opcji");
+            LCD1602_SetCursor(0, 1);
+            LCD1602_Print("w trybie MUSIC");
         }
     }
 }
+
 
 static void processKey(char key) {
     char buffer[16];
