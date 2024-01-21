@@ -5,7 +5,7 @@
 #include "TPM.h"
 #include "lcd1602.h"
 #include "klaw4x4.h"
-#include "global.h"
+#include "mode_manager.h"
 
 // Definicje częstotliwości nut
 #define C4_FREQ  262
@@ -24,6 +24,8 @@
 #define B5_FREQ  988
 #define C6_FREQ  1047 // Następna oktawa C
 #define D6_FREQ  1175
+
+extern volatile int buzzerEnabled; // Deklaracja zmiennej
 
 // Prototypy funkcji
 void Buzzer_Init(void);

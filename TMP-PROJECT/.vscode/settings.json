@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "globals.h": "c",
+        "mode_manager.h": "c"
+    }
+}

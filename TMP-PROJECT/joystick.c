@@ -1,6 +1,4 @@
 #include "joystick.h"
-#include "lcd1602.h"
-#include <stdbool.h>
 
 // Inicjalizacja joysticka
 void Joystick_Init() {
@@ -25,3 +23,20 @@ bool Joystick_TestPin(GPIO_Type* port, uint32_t pin) {
     return !(port->PDIR & (1 << pin));
 }
 
+void handleSetButton(void) {
+    if (Joystick_TestPin(JOYSTICK_SET_PORT, JOYSTICK_SET_PIN) && tickCount - lastSetButtonTick > 500) {
+        lastSetButtonTick = tickCount;
+        if (currentMode != MUSIC) {
+            buzzerEnabled = !buzzerEnabled;
+            LCD1602_ClearAll();
+            LCD1602_Print(buzzerEnabled ? "Buzzer ON" : "Buzzer OFF");
+        } else {
+            displayState = 1; // Aktywuj stan wyświetlacza
+            displayTimer = tickCount; // Zapisz bieżący czas
+            LCD1602_ClearAll();
+            LCD1602_Print("Brak tej opcji");
+            LCD1602_SetCursor(0, 1);
+            LCD1602_Print("w trybie MUSIC");
+        }
+    }
+}

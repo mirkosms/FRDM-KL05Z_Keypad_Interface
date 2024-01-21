@@ -2,65 +2,26 @@
 #include "frdm_bsp.h"
 #include "lcd1602.h"
 #include "klaw4x4.h"
+#include "calculator.h"
 #include "TPM.h"
 #include "tsi.h"
 #include "joystick.h"
 #include "buzzer.h"
-#include "global.h"
+#include "mode_manager.h"
+#include "globals.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-
-// Prototypy funkcji
-static void doubleToStr(double num, char* str);
-static void processKey(char key);
-void handleSetButton(void);
-
-Mode currentMode = DEFAULT;  // Ustaw domyślny tryb na DEFAULT
-static volatile int buzzerEnabled = 1; // Zmienna do kontroli stanu buzzera
 volatile uint32_t tickCount = 0;
 volatile uint32_t lastModeChangeTick = 0;
 volatile uint32_t lastSetButtonTick = 0;
 volatile uint32_t displayTimer = 0;
 volatile int displayState = 0;
 
-
-typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
-
 #define true 1
 #define false 0
 #define DEBOUNCE_COUNT 5
-
-static volatile double currentNumber = 0.0;
-static volatile double storedNumber = 0.0;
-static volatile double decimalMultiplier = 0.1;
-static volatile Operation currentOperation = NONE;
-static volatile int decimalEntered = false;
-static volatile int isNegative = false; // Zmienna do śledzenia liczby ujemnej
-
-void changeMode(Mode newMode) {
-    currentMode = newMode;
-    lastModeChangeTick = tickCount;  // Zapisz czas zmiany trybu
-
-    // Wyświetlanie komunikatu o zmianie trybu
-    LCD1602_ClearAll();
-    if (newMode == MUSIC) {
-        LCD1602_Print("Tryb MUSIC");
-    } else if (newMode == DEFAULT) {
-        LCD1602_Print("Tryb DEFAULT");
-    }
-}
-
-void updateDisplay(void) {
-    if (displayState == 1 && (tickCount - displayTimer > 1000)) { // 1000 ticków opóźnienia
-        displayState = 0; // Reset stanu wyświetlacza
-        LCD1602_ClearAll();
-        LCD1602_SetCursor(0, 0);
-        LCD1602_Print("Tryb MUSIC");
-    }
-    // Możliwość dopisania koolejnych stanów
-}
 
 int main(void) {
     // Inicjalizacja urządzeń
@@ -77,13 +38,7 @@ int main(void) {
         bool midPressed = Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN);
 
         if (sliderValue > 0 || midPressed) {
-            // Resetowanie kalkulatora
-            currentNumber = 0.0;
-            storedNumber = 0.0;
-            decimalMultiplier = 0.1;
-            currentOperation = NONE;
-            decimalEntered = false;
-            isNegative = false;
+            resetCalculator();
             LCD1602_ClearAll();
             LCD1602_Print("0");
         }
@@ -143,140 +98,3 @@ void SysTick_Handler(void) {
     updateDisplay(); // Aktualizuj stan wyświetlacza
 }
 
-void handleSetButton(void) {
-    if (Joystick_TestPin(JOYSTICK_SET_PORT, JOYSTICK_SET_PIN) && tickCount - lastSetButtonTick > 500) {
-        lastSetButtonTick = tickCount;
-        if (currentMode != MUSIC) {
-            buzzerEnabled = !buzzerEnabled;
-            LCD1602_ClearAll();
-            LCD1602_Print(buzzerEnabled ? "Buzzer ON" : "Buzzer OFF");
-        } else {
-            displayState = 1; // Aktywuj stan wyświetlacza
-            displayTimer = tickCount; // Zapisz bieżący czas
-            LCD1602_ClearAll();
-            LCD1602_Print("Brak tej opcji");
-            LCD1602_SetCursor(0, 1);
-            LCD1602_Print("w trybie MUSIC");
-        }
-    }
-}
-
-
-static void processKey(char key) {
-    char buffer[16];
-    char displayString[2] = {key, '\0'};
-    // Odtwarzanie dźwięku tylko gdy buzzer włączony
-    if (buzzerEnabled) {
-        Buzzer_PlayNoteForKey(key);
-    }
-
-    if (key == '-' && currentNumber == 0.0 && !decimalEntered && currentOperation == NONE) {
-        isNegative = !isNegative;
-        LCD1602_ClearAll();
-        LCD1602_Print("-0");
-    } else if (key >= '0' && key <= '9') {
-        double numValue = (key - '0');
-        if (!decimalEntered) {
-            currentNumber = currentNumber * 10.0 + (isNegative ? -numValue : numValue);
-        } else {
-            currentNumber += (isNegative ? -numValue : numValue) * decimalMultiplier;
-            decimalMultiplier *= 0.1;
-        }
-        doubleToStr(currentNumber, buffer);
-        LCD1602_ClearAll();
-        LCD1602_Print(buffer);
-    } else if (key == '.') {
-        if (!decimalEntered) {
-            decimalEntered = true;
-            doubleToStr(currentNumber, buffer);
-            strcat(buffer, ".");
-            LCD1602_ClearAll();
-            LCD1602_Print(buffer);
-        }
-    } else if (key == '+' || key == '-' || key == '*' || key == '/') {
-        storedNumber = currentNumber;
-        currentNumber = 0.0; // Resetowanie bieżącej liczby
-        decimalEntered = false; // Resetowanie wprowadzania części dziesiętnej
-        isNegative = false; // Resetowanie znaku na dodatni dla nowej liczby
-        decimalMultiplier = 0.1;
-        currentOperation = (key == '+') ? ADD :
-                           (key == '-') ? SUBTRACT :
-                           (key == '*') ? MULTIPLY : DIVIDE;
-
-        LCD1602_ClearAll();
-        LCD1602_Print(displayString);
-    } else if (key == '=') {
-        if (currentOperation == DIVIDE && currentNumber == 0.0) {
-            LCD1602_ClearAll();
-            LCD1602_Print("N/D"); // Obsługa dzielenia przez zero
-        } else {
-            switch (currentOperation) {
-                case ADD: currentNumber += storedNumber; break;
-                case SUBTRACT: currentNumber = storedNumber - currentNumber; break;
-                case MULTIPLY: currentNumber *= storedNumber; break;
-                case DIVIDE: currentNumber = storedNumber / currentNumber; break;
-                default: break;
-            }
-            doubleToStr(currentNumber, buffer);
-            LCD1602_ClearAll();
-            LCD1602_Print(buffer);
-        }
-        currentOperation = NONE;
-        decimalEntered = false;
-        decimalMultiplier = 0.1;
-    }
-}
-
-static void doubleToStr(double num, char* str) {
-    int isNegative = 0;
-    if (num < 0) {
-        isNegative = 1;
-        num = -num;
-    }
-
-    int intPart = (int)num;
-    int decimalPart = (int)((num - (double)intPart) * 100 + 0.5); // Dodanie 0.5 dla zaokrąglenia
-
-    // Obsługa przepełnienia po zaokrągleniu
-    if (decimalPart >= 100) {
-        decimalPart -= 100;
-        intPart += 1;
-    }
-
-    int i = 0;
-    if (isNegative) {
-        str[i++] = '-';
-    }
-
-    // Konwersja części całkowitej na string
-    int tempIntPart = intPart;
-    do {
-        int digit = tempIntPart % 10;
-        str[i++] = '0' + digit;
-        tempIntPart /= 10;
-    } while (tempIntPart > 0);
-
-    // Odwrócenie ciągu znaków części całkowitej
-    int start = isNegative ? 1 : 0;
-    for (int j = start; j < (i + start) / 2; ++j) {
-        char temp = str[j];
-        str[j] = str[i - 1 - j + start];
-        str[i - 1 - j + start] = temp;
-    }
-
-    // Dodanie części dziesiętnej tylko jeśli różna od zera
-    if (decimalPart > 0) {
-        str[i++] = '.';
-        str[i++] = '0' + (decimalPart / 10);
-        str[i++] = '0' + (decimalPart % 10);
-
-        // Usuwanie niepotrzebnych zer na końcu
-        if (str[i-1] == '0') {
-            i--;
-            if (str[i-1] == '0') {
-                i -= 2; // Usuń także kropkę, jeśli obie cyfry dziesiętne to zera
-            }
-        }
-    }
-    str[i] = '\0';
-}

@@ -1,6 +1,6 @@
 Dependencies for Project 'ProjektTMP2', Target 'FRDM KL05ZJ': (DO NOT MODIFY !)
 CompilerVersion: 6160000::V6.16::ARMCLANG
-F (.\main.c)(0x65AC6558)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./main.o -MD)
+F (.\main.c)(0x65AC7F88)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./main.o -MD)
 I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\MKL05Z4.h)(0x6592F437)
 I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\core_cm0plus.h)(0x6592EE33)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x60356A40)
@@ -13,15 +13,17 @@ I (frdm_bsp.h)(0x5F90B818)
 I (lcd1602.h)(0x5FC545E6)
 I (i2c.h)(0x5FBFDF5A)
 I (klaw4x4.h)(0x659540DF)
+I (calculator.h)(0x65AC7133)
 I (TPM.h)(0x659B2FDB)
-I (tsi.h)(0x5F846D20)
-I (joystick.h)(0x65ABB2F0)
-I (C:\Keil_v5\ARM\ARMCLANG\include\stdbool.h)(0x60356A3A)
-I (buzzer.h)(0x65AC4AD3)
-I (global.h)(0x65AC00C3)
-I (C:\Keil_v5\ARM\ARMCLANG\include\stdio.h)(0x60356A44)
+I (buzzer.h)(0x65AC7B86)
+I (mode_manager.h)(0x65AC802B)
 I (C:\Keil_v5\ARM\ARMCLANG\include\string.h)(0x60356A40)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdio.h)(0x60356A44)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdlib.h)(0x60356A40)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdbool.h)(0x60356A3A)
+I (tsi.h)(0x5F846D20)
+I (joystick.h)(0x65AC7B60)
+I (globals.h)(0x65AC77DB)
 F (.\i2c.c)(0x60888246)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./i2c.o -MD)
 I (i2c.h)(0x5FBFDF5A)
 I (frdm_bsp.h)(0x5F90B818)
@@ -76,8 +78,8 @@ I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\m-prof
 I (C:\Keil_v5\ARM\ARMCLANG\include\arm_acle.h)(0x60356A34)
 I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\system_MKL05Z4.h)(0x6592F437)
 I (TPM.h)(0x659B2FDB)
-F (.\joystick.c)(0x65ABB2F4)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./joystick.o -MD)
-I (joystick.h)(0x65ABB2F0)
+F (.\joystick.c)(0x65AC78B0)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./joystick.o -MD)
+I (joystick.h)(0x65AC7B60)
 I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\MKL05Z4.h)(0x6592F437)
 I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\core_cm0plus.h)(0x6592EE33)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x60356A40)
@@ -86,12 +88,17 @@ I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\cmsis_
 I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\m-profile\cmsis_armclang_m.h)(0x6592EE33)
 I (C:\Keil_v5\ARM\ARMCLANG\include\arm_acle.h)(0x60356A34)
 I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\system_MKL05Z4.h)(0x6592F437)
-I (C:\Keil_v5\ARM\ARMCLANG\include\stdbool.h)(0x60356A3A)
+I (mode_manager.h)(0x65AC802B)
+I (globals.h)(0x65AC77DB)
+I (buzzer.h)(0x65AC7B86)
+I (TPM.h)(0x659B2FDB)
 I (lcd1602.h)(0x5FC545E6)
 I (frdm_bsp.h)(0x5F90B818)
 I (i2c.h)(0x5FBFDF5A)
-F (.\buzzer.c)(0x65AC5EDF)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./buzzer.o -MD)
-I (buzzer.h)(0x65AC4AD3)
+I (klaw4x4.h)(0x659540DF)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdbool.h)(0x60356A3A)
+F (.\buzzer.c)(0x65AC75C1)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./buzzer.o -MD)
+I (buzzer.h)(0x65AC7B86)
 I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\MKL05Z4.h)(0x6592F437)
 I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\core_cm0plus.h)(0x6592EE33)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x60356A40)
@@ -105,7 +112,41 @@ I (lcd1602.h)(0x5FC545E6)
 I (frdm_bsp.h)(0x5F90B818)
 I (i2c.h)(0x5FBFDF5A)
 I (klaw4x4.h)(0x659540DF)
-I (global.h)(0x65AC00C3)
+I (mode_manager.h)(0x65AC802B)
+F (.\calculator.c)(0x65AC6BDA)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./calculator.o -MD)
+I (calculator.h)(0x65AC7133)
+I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\MKL05Z4.h)(0x6592F437)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\core_cm0plus.h)(0x6592EE33)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x60356A40)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\cmsis_version.h)(0x6592EE33)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\cmsis_compiler.h)(0x6592EE33)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\m-profile\cmsis_armclang_m.h)(0x6592EE33)
+I (C:\Keil_v5\ARM\ARMCLANG\include\arm_acle.h)(0x60356A34)
+I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\system_MKL05Z4.h)(0x6592F437)
+I (frdm_bsp.h)(0x5F90B818)
+I (lcd1602.h)(0x5FC545E6)
+I (i2c.h)(0x5FBFDF5A)
+I (klaw4x4.h)(0x659540DF)
+I (TPM.h)(0x659B2FDB)
+I (buzzer.h)(0x65AC7B86)
+I (mode_manager.h)(0x65AC802B)
+I (C:\Keil_v5\ARM\ARMCLANG\include\string.h)(0x60356A40)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdio.h)(0x60356A44)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdlib.h)(0x60356A40)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdbool.h)(0x60356A3A)
+F (.\mode_manager.c)(0x65AC8060)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./mode_manager.o -MD)
+I (mode_manager.h)(0x65AC802B)
+I (lcd1602.h)(0x5FC545E6)
+I (frdm_bsp.h)(0x5F90B818)
+I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\MKL05Z4.h)(0x6592F437)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\core_cm0plus.h)(0x6592EE33)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x60356A40)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\cmsis_version.h)(0x6592EE33)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\cmsis_compiler.h)(0x6592EE33)
+I (C:\Users\HP\AppData\Local\Arm\Packs\ARM\CMSIS\6.0.0\CMSIS\Core\Include\m-profile\cmsis_armclang_m.h)(0x6592EE33)
+I (C:\Keil_v5\ARM\ARMCLANG\include\arm_acle.h)(0x60356A34)
+I (C:\Users\HP\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.1\Device\Include\system_MKL05Z4.h)(0x6592F437)
+I (i2c.h)(0x5FBFDF5A)
 F (RTE\Device\MKL05Z32xxx4\startup_MKL05Z4.s)(0x6592F437)(--target=arm-arm-none-eabi -mcpu=cortex-m0plus -masm=auto -c-gdwarf-4 -Wa,armasm,--pd,"__EVAL SETA 1"-I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-Wa,armasm,--pd,"__UVISION_VERSION SETA 536" -Wa,armasm,--pd,"_RTE_ SETA 1" -Wa,armasm,--pd,"MKL05Z32xxx4 SETA 1" -Wa,armasm,--pd,"_RTE_ SETA 1"-o ./startup_mkl05z4.o)
 F (RTE\Device\MKL05Z32xxx4\system_MKL05Z4.c)(0x6592F437)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_FRDM_KL05ZJ-IC:/Users/HP/AppData/Local/Arm/Packs/ARM/CMSIS/6.0.0/CMSIS/Core/Include-IC:/Users/HP/AppData/Local/Arm/Packs/Keil/Kinetis_KLxx_DFP/1.15.1/Device/Include-D__UVISION_VERSION="536" -D_RTE_ -DMKL05Z32xxx4 -D_RTE_-o ./system_mkl05z4.o -MD)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x60356A40)

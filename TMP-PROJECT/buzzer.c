@@ -1,6 +1,7 @@
 #include "buzzer.h"
 
 extern Mode currentMode;
+volatile int buzzerEnabled = 1; // Inicjalizacja zmiennej
 
 // Funkcje dotyczące buzzera
 void Buzzer_Init(void) {
@@ -42,7 +43,7 @@ void Buzzer_PlayNoteForKey(char key) {
         case '+': frequency = D6_FREQ; break;
         default: frequency = 0; break;
     }
-    
+
     if (frequency > 0) {
         Buzzer_PlayTone(frequency);
     } else {
