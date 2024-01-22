@@ -17,6 +17,21 @@ void resetCalculator(void) {
     isNegative = false;
 }
 
+void deleteLastCharacter(void) {
+    if (currentNumber >= 10 || currentNumber <= -10) {
+        currentNumber = (int)(currentNumber / 10);
+    } else if (currentNumber <= 9 && currentNumber >= -9) {
+        // W przypadku liczb jednocyfrowych resetujemy do 0
+        currentNumber = 0;
+        isNegative = false;
+    }
+    // Aktualizacja wyświetlacza
+    char buffer[16];
+    doubleToStr(currentNumber, buffer);
+    LCD1602_ClearAll();
+    LCD1602_Print(buffer);
+}
+
 double getCurrentNumber(void) {
     return currentNumber;
 }

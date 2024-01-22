@@ -22,6 +22,6 @@ void resetCalculator(void);
 double getCurrentNumber(void);
 void setCurrentNumber(double num);
 void doubleToStr(double num, char* str);
-// ... (inne funkcje, które uznasz za stosowne)
+void deleteLastCharacter(void);
 
 #endif // CALCULATOR_H

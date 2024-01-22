@@ -18,10 +18,13 @@ volatile uint32_t lastModeChangeTick = 0;
 volatile uint32_t lastSetButtonTick = 0;
 volatile uint32_t displayTimer = 0;
 volatile int displayState = 0;
+volatile uint32_t lastActionTime = 0;
 
 #define true 1
 #define false 0
 #define DEBOUNCE_COUNT 5
+#define DISPLAY_UPDATE_DELAY 100 // Opóźnienie w milisekundach
+
 
 int main(void) {
     // Inicjalizacja urządzeń
@@ -37,10 +40,17 @@ int main(void) {
         uint8_t sliderValue = TSI_ReadSlider();
         bool midPressed = Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN);
 
-        if (sliderValue > 0 || midPressed) {
-            resetCalculator();
-            LCD1602_ClearAll();
-            LCD1602_Print("0");
+        if (tickCount - lastActionTime > DISPLAY_UPDATE_DELAY) {
+            if (sliderValue > 0) {
+                if (sliderValue < 50) {
+                    resetCalculator();
+                    LCD1602_ClearAll();
+                    LCD1602_Print("0");
+                } else {
+                    deleteLastCharacter();
+                }
+                lastActionTime = tickCount;
+            }
         }
 
         if (Joystick_TestPin(JOYSTICK_LEFT_PORT, JOYSTICK_LEFT_PIN) && tickCount - lastModeChangeTick > 500) {
@@ -104,4 +114,3 @@ void SysTick_Handler(void) {
     handleSetButton();
     updateDisplay(); // Aktualizuj stan wyświetlacza
 }
-
