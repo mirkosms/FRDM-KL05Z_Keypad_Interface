@@ -24,10 +24,36 @@ volatile uint32_t lastActionTime = 0;
 #define false 0
 #define DEBOUNCE_COUNT 5
 #define DISPLAY_UPDATE_DELAY 100 // Opóźnienie w milisekundach
+#define MAX_ROMAN_STRING_LENGTH 20
 
+char romanString[MAX_ROMAN_STRING_LENGTH] = {0}; // Bufor na znaki rzymskie
+
+char ConvertKeyToRoman(char key) {
+    switch(key) {
+        case '1': return 'I';
+        case '2': return 'V';
+        case '3': return 'X';
+        case '4': return 'L';
+        case '5': return 'C';
+        case '6': return 'D';
+        case '7': return 'M';
+        default: return ' '; // Nieaktywny klawisz
+    }
+}
+
+void resetRomanBuffer(void) {
+    memset(romanString, 0, MAX_ROMAN_STRING_LENGTH);
+}
+
+void addRomanCharToBuffer(char romanChar) {
+    size_t len = strlen(romanString);
+    if (len < MAX_ROMAN_STRING_LENGTH - 1) {
+        romanString[len] = romanChar;
+        romanString[len + 1] = '\0';
+    }
+}
 
 int main(void) {
-    // Inicjalizacja urządzeń
     Klaw_Init();
     LCD1602_Init();
     LCD1602_ClearAll();
@@ -38,15 +64,18 @@ int main(void) {
 
     while (1) {
         uint8_t sliderValue = TSI_ReadSlider();
-        bool midPressed = Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN);
 
         if (tickCount - lastActionTime > DISPLAY_UPDATE_DELAY) {
             if (sliderValue > 0) {
-                if (sliderValue < 50) {
+                if (currentMode == ROMAN) {
+                    resetRomanBuffer();
+                    LCD1602_ClearAll();
+                    LCD1602_Print("Roman Reset");
+                } else if (currentMode != ROMAN && sliderValue < 50) {
                     resetCalculator();
                     LCD1602_ClearAll();
-                    LCD1602_Print("0");
-                } else {
+                    LCD1602_Print("Reset");
+                } else if (sliderValue >= 50) {
                     deleteLastCharacter();
                 }
                 lastActionTime = tickCount;
@@ -61,11 +90,14 @@ int main(void) {
             changeMode(COMPUTER);
         }
 
+        if (Joystick_TestPin(JOYSTICK_RIGHT_PORT, JOYSTICK_RIGHT_PIN) && tickCount - lastModeChangeTick > 500) {
+            changeMode(ROMAN);
+        }
+
         if (Joystick_TestPin(JOYSTICK_MID_PORT, JOYSTICK_MID_PIN)) {
             changeMode(DEFAULT);
         }
 
-        // Obsługa przycisku SET
         handleSetButton();
 
         switch (currentMode) {
@@ -78,6 +110,9 @@ int main(void) {
             }
             case COMPUTER:
                 // Logika dla tego trybu
+                break;
+            case ROMAN:
+                // Obsługa trybu Roman jest realizowana w SysTick_Handler
                 break;
             case DEFAULT:
             default:
@@ -98,7 +133,14 @@ void SysTick_Handler(void) {
         debounce_counter = 0;
         last_key = key;
         if (key != 0) {
-            if (currentMode == MUSIC || (currentMode == DEFAULT && buzzerEnabled) || (currentMode == COMPUTER && buzzerEnabled)) {
+            if (currentMode == ROMAN) {
+                char romanChar = ConvertKeyToRoman(key);
+                if (romanChar != ' ') {
+                    addRomanCharToBuffer(romanChar);
+                    LCD1602_ClearAll();
+                    LCD1602_Print(romanString);
+                }
+            } else if (currentMode == MUSIC || (currentMode == DEFAULT && buzzerEnabled) || (currentMode == COMPUTER && buzzerEnabled)) {
                 Buzzer_PlayNoteForKey(key);
             }
         } else {
