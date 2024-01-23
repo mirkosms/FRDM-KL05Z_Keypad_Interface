@@ -433,6 +433,11 @@
               <FileType>1</FileType>
               <FilePath>.\mode_manager.c</FilePath>
             </File>
+            <File>
+              <FileName>romanDigit.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\romanDigit.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

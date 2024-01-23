@@ -5,6 +5,7 @@
 #include "mode_manager.h"
 #include "globals.h"
 #include "buzzer.h"
+#include "romanDigit.h"
 #include "lcd1602.h"
 #include <stdbool.h> 
 
@@ -29,5 +30,6 @@
 void Joystick_Init(void);
 bool Joystick_TestPin(GPIO_Type* port, uint32_t pin);
 void handleSetButton(void);
+void handleRstButton(void);
 
 #endif // JOYSTICK_H

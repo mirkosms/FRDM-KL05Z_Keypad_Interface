@@ -40,3 +40,27 @@ void handleSetButton(void) {
         }
     }
 }
+
+void handleRstButton(void) {
+    static int lastRstState = 0;
+    static uint32_t lastRstChangeTick = 0;
+
+    int currentRstState = Joystick_TestPin(JOYSTICK_RST_PORT, JOYSTICK_RST_PIN);
+    if (currentRstState != lastRstState && tickCount - lastRstChangeTick > DEBOUNCE_COUNT) {
+        lastRstChangeTick = tickCount;
+        lastRstState = currentRstState;
+
+        if (currentRstState) {
+            if (currentMode == COMPUTER) {
+                romanModeInComputerEnabled = !romanModeInComputerEnabled;
+                LCD1602_ClearAll();
+                LCD1602_Print(romanModeInComputerEnabled ? "Roman Mode ON" : "Roman Mode OFF");
+            } else {
+                LCD1602_ClearAll();
+                LCD1602_Print("Brak tej opcji,");
+                LCD1602_SetCursor(0, 1);
+                LCD1602_Print("tylko w COMPUTER");
+            }
+        }
+    }
+}

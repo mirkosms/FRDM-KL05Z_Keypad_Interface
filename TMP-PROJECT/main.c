@@ -8,6 +8,7 @@
 #include "joystick.h"
 #include "buzzer.h"
 #include "mode_manager.h"
+#include "romanDigit.h"
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
@@ -16,91 +17,13 @@
 volatile uint32_t tickCount = 0;
 volatile uint32_t lastModeChangeTick = 0;
 volatile uint32_t lastSetButtonTick = 0;
-volatile uint32_t lastRstButtonTick = 0; 
+volatile uint32_t lastRstButtonTick = 0;
 volatile uint32_t displayTimer = 0;
 volatile int displayState = 0;
 volatile uint32_t lastActionTime = 0;
-volatile int romanModeInComputerEnabled = 0;
 
 #define true 1
 #define false 0
-#define DEBOUNCE_COUNT 5
-#define DISPLAY_UPDATE_DELAY 100 // Opóźnienie w milisekundach
-#define MAX_ROMAN_STRING_LENGTH 20
-#define MAX_DIGIT_STRING_LENGTH 20
-char romanString[MAX_ROMAN_STRING_LENGTH] = {0}; // Bufor na znaki rzymskie
-
-
-char digitString[MAX_DIGIT_STRING_LENGTH] = {0}; // Bufor na cyfry
-
-void addDigitToBuffer(char digit) {
-    size_t len = strlen(digitString);
-    if (len < MAX_DIGIT_STRING_LENGTH - 1) {
-        digitString[len] = digit;
-        digitString[len + 1] = '\0';
-    }
-}
-
-void resetDigitBuffer(void) {
-    memset(digitString, 0, MAX_DIGIT_STRING_LENGTH);
-}
-
-void handleDigitInput(char key) {
-    if (key >= '0' && key <= '9') {
-        addDigitToBuffer(key);
-        LCD1602_ClearAll();
-        LCD1602_Print(digitString);
-    }
-}
-
-char ConvertKeyToRoman(char key) {
-    switch(key) {
-        case '1': return 'I';
-        case '2': return 'V';
-        case '3': return 'X';
-        case '4': return 'L';
-        case '5': return 'C';
-        case '6': return 'D';
-        case '7': return 'M';
-        default: return ' '; // Nieaktywny klawisz
-    }
-}
-
-void resetRomanBuffer(void) {
-    memset(romanString, 0, MAX_ROMAN_STRING_LENGTH);
-}
-
-void addRomanCharToBuffer(char romanChar) {
-    size_t len = strlen(romanString);
-    if (len < MAX_ROMAN_STRING_LENGTH - 1) {
-        romanString[len] = romanChar;
-        romanString[len + 1] = '\0';
-    }
-}
-
-void handleRstButton(void) {
-    static int lastRstState = 0;
-    static uint32_t lastRstChangeTick = 0;
-
-    int currentRstState = Joystick_TestPin(JOYSTICK_RST_PORT, JOYSTICK_RST_PIN);
-    if (currentRstState != lastRstState && tickCount - lastRstChangeTick > DEBOUNCE_COUNT) {
-        lastRstChangeTick = tickCount;
-        lastRstState = currentRstState;
-
-        if (currentRstState) {
-            if (currentMode == COMPUTER) {
-                romanModeInComputerEnabled = !romanModeInComputerEnabled;
-                LCD1602_ClearAll();
-                LCD1602_Print(romanModeInComputerEnabled ? "Roman Mode ON" : "Roman Mode OFF");
-            } else {
-                LCD1602_ClearAll();
-                LCD1602_Print("Brak tej opcji,");
-                LCD1602_SetCursor(0, 1);
-                LCD1602_Print("tylko w COMPUTER");
-            }
-        }
-    }
-}
 
 int main(void) {
     Klaw_Init();
