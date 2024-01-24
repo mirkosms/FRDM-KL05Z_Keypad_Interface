@@ -10,9 +10,11 @@
 #include "mode_manager.h"
 #include "romanDigit.h"
 #include "globals.h"
+#include "uart.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 volatile uint32_t tickCount = 0;
 volatile uint32_t lastModeChangeTick = 0;
@@ -22,9 +24,6 @@ volatile uint32_t displayTimer = 0;
 volatile int displayState = 0;
 volatile uint32_t lastActionTime = 0;
 
-#define true 1
-#define false 0
-
 int main(void) {
     Klaw_Init();
     LCD1602_Init();
@@ -32,6 +31,7 @@ int main(void) {
     TSI_Init();
     Joystick_Init();
     Buzzer_Init();
+    UART_Init();
     SysTick_Config(SystemCoreClock / 100);
 
     while (1) {
@@ -96,34 +96,34 @@ int main(void) {
     }
 }
 
+
 void SysTick_Handler(void) {
     static char last_key = 0;
     static int debounce_counter = 0;
 
     tickCount++;
-    handleRstButton(); // Handle RST button within SysTick
+    handleRstButton(); 
     handleSetButton();
 
     char key = Klaw_Read();
     if (key != last_key) {
         debounce_counter = 0;
         last_key = key;
-        if ((currentMode == MUSIC) || (buzzerEnabled && currentMode != MUSIC)) {
-            if (key != 0) {
-                Buzzer_PlayNoteForKey(key);
-            } else {
-                Buzzer_StopTone();
-            }
-        }
         if (key != 0) {
+            if ((currentMode == MUSIC) || (buzzerEnabled && currentMode != MUSIC)) {
+                Buzzer_PlayNoteForKey(key);
+            }
+
             if (currentMode == COMPUTER && !romanModeInComputerEnabled) {
                 handleDigitInput(key);
+                uart_send(key); // Wysyłanie przez UART w trybie COMPUTER
             } else if (currentMode == COMPUTER && romanModeInComputerEnabled) {
                 char romanChar = ConvertKeyToRoman(key);
                 if (romanChar != ' ') {
                     addRomanCharToBuffer(romanChar);
                     LCD1602_ClearAll();
                     LCD1602_Print(romanString);
+                    uart_send(romanChar); // Wysyłanie przez UART w trybie COMPUTER z Roman ON
                 }
             } else if (currentMode == ROMAN) {
                 char romanChar = ConvertKeyToRoman(key);
@@ -131,8 +131,11 @@ void SysTick_Handler(void) {
                     addRomanCharToBuffer(romanChar);
                     LCD1602_ClearAll();
                     LCD1602_Print(romanString);
+                    uart_send(romanChar); // Wysyłanie przez UART w trybie ROMAN
                 }
             }
+        } else {
+            Buzzer_StopTone();
         }
     } else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
         debounce_counter++;
@@ -143,4 +146,3 @@ void SysTick_Handler(void) {
 
     updateDisplay(); // Aktualizuj stan wyświetlacza
 }
-

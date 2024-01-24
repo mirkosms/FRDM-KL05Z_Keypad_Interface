@@ -438,6 +438,11 @@
               <FileType>1</FileType>
               <FilePath>.\romanDigit.c</FilePath>
             </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
