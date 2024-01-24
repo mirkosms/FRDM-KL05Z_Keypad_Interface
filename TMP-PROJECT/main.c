@@ -57,6 +57,8 @@ int main(void) {
 
         if (Joystick_TestPin(JOYSTICK_LEFT_PORT, JOYSTICK_LEFT_PIN) && tickCount - lastModeChangeTick > 500) {
             changeMode(MUSIC);
+            LCD1602_ClearAll();
+            LCD1602_Print("Tryb MUSIC");
         }
 
         if (Joystick_TestPin(JOYSTICK_UP_PORT, JOYSTICK_UP_PIN) && tickCount - lastModeChangeTick > 500) {
@@ -75,27 +77,18 @@ int main(void) {
         handleRstButton();
 
         switch (currentMode) {
-            case MUSIC:{
-                char key = Klaw_Read();
-                if (key != 0) {
-                    Buzzer_PlayNoteForKey(key);
-                }
+            case MUSIC:
                 break;
-            }
             case COMPUTER:
-                // Logika dla tego trybu
                 break;
             case ROMAN:
-                // Obsługa trybu Roman jest realizowana w SysTick_Handler
                 break;
             case DEFAULT:
             default:
-                // Domyślny tryb pracy
                 break;
         }
     }
 }
-
 
 void SysTick_Handler(void) {
     static char last_key = 0;
@@ -107,42 +100,21 @@ void SysTick_Handler(void) {
 
     char key = Klaw_Read();
     if (key != last_key) {
-        debounce_counter = 0;
         last_key = key;
-        if (key != 0) {
-            if ((currentMode == MUSIC) || (buzzerEnabled && currentMode != MUSIC)) {
-                Buzzer_PlayNoteForKey(key);
-            }
 
-            if (currentMode == COMPUTER && !romanModeInComputerEnabled) {
-                handleDigitInput(key);
-                uart_send(key); // Wysyłanie przez UART w trybie COMPUTER
-            } else if (currentMode == COMPUTER && romanModeInComputerEnabled) {
-                char romanChar = ConvertKeyToRoman(key);
-                if (romanChar != ' ') {
-                    addRomanCharToBuffer(romanChar);
-                    LCD1602_ClearAll();
-                    LCD1602_Print(romanString);
-                    uart_send(romanChar); // Wysyłanie przez UART w trybie COMPUTER z Roman ON
-                }
-            } else if (currentMode == ROMAN) {
-                char romanChar = ConvertKeyToRoman(key);
-                if (romanChar != ' ') {
-                    addRomanCharToBuffer(romanChar);
-                    LCD1602_ClearAll();
-                    LCD1602_Print(romanString);
-                    uart_send(romanChar); // Wysyłanie przez UART w trybie ROMAN
-                }
+        if (key != 0) {
+            handleKeyboardInput(key);  // Wywołanie funkcji obsługującej tryby
+
+            if (currentMode == MUSIC) {
+                handleMusicMode(key);  // Bezpośrednie odtwarzanie dźwięku w trybie MUSIC
+            } else if (currentMode == DEFAULT) {
+                processKey(key);  // Obsługa kalkulatora w trybie DEFAULT
             }
         } else {
             Buzzer_StopTone();
         }
     } else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
         debounce_counter++;
-        if (debounce_counter == DEBOUNCE_COUNT && currentMode == DEFAULT) {
-            processKey(key);
-        }
     }
-
-    updateDisplay(); // Aktualizuj stan wyświetlacza
 }
+
