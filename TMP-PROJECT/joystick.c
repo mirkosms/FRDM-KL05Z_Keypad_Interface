@@ -1,6 +1,8 @@
 #include "joystick.h"
 
-// Inicjalizacja joysticka
+/**
+ * Inicjalizuje joystick, konfigurując odpowiednie porty i piny.
+ */
 void Joystick_Init() {
     SIM->SCGC5 |= SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTB_MASK; // Wlaczenie zegara dla portów A i B
 
@@ -18,11 +20,20 @@ void Joystick_Init() {
     PTA->PDDR &= ~(1U << JOYSTICK_DOWN_PIN | 1U << JOYSTICK_RIGHT_PIN | 1U << JOYSTICK_RST_PIN | 1U << JOYSTICK_SET_PIN);
 }
 
-// Testowanie stanu wybranego pinu, true - naciśniety
+/**
+ * Testuje stan wybranego pinu joysticka.
+ * @param port Port, do którego jest podłączony pin.
+ * @param pin Numer pinu do testowania.
+ * @return true jeśli przycisk jest naciśnięty, false w przeciwnym razie.
+ */
 bool Joystick_TestPin(GPIO_Type* port, uint32_t pin) {
     return !(port->PDIR & (1 << pin));
 }
 
+/**
+ * Obsługuje działanie przycisku SET.
+ * Zmienia stan buzzera lub wyświetla informację, gdy tryb MUSIC jest aktywny.
+ */
 void handleSetButton(void) {
     if (Joystick_TestPin(JOYSTICK_SET_PORT, JOYSTICK_SET_PIN) && tickCount - lastSetButtonTick > 500) {
         lastSetButtonTick = tickCount;
@@ -41,6 +52,10 @@ void handleSetButton(void) {
     }
 }
 
+/**
+ * Obsługuje działanie przycisku RST.
+ * Zmienia tryb Roman w trybie COMPUTER lub wyświetla informację o braku opcji.
+ */
 void handleRstButton(void) {
     static int lastRstState = 0;
     static uint32_t lastRstChangeTick = 0;

@@ -2,10 +2,15 @@
 #include <string.h>
 #include "lcd1602.h"
 
-char romanString[MAX_ROMAN_STRING_LENGTH] = {0}; // Bufor na znaki rzymskie
-char digitString[MAX_DIGIT_STRING_LENGTH] = {0}; // Bufor na cyfry
+// Bufory na znaki rzymskie i cyfry
+char romanString[MAX_ROMAN_STRING_LENGTH] = {0};
+char digitString[MAX_DIGIT_STRING_LENGTH] = {0};
 int romanModeInComputerEnabled = 0;
 
+/**
+ * Dodaje cyfrę do bufora cyfr.
+ * @param digit Cyfra do dodania.
+ */
 void addDigitToBuffer(char digit) {
     size_t len = strlen(digitString);
     if (len < MAX_DIGIT_STRING_LENGTH - 1) {
@@ -14,10 +19,18 @@ void addDigitToBuffer(char digit) {
     }
 }
 
+/**
+ * Resetuje bufor cyfr.
+ */
 void resetDigitBuffer(void) {
     memset(digitString, 0, MAX_DIGIT_STRING_LENGTH);
 }
 
+/**
+ * Obsługuje wprowadzenie cyfry.
+ * Wyświetla wprowadzoną cyfrę na LCD.
+ * @param key Naciśnięty klawisz reprezentujący cyfrę.
+ */
 void handleDigitInput(char key) {
     if (key >= '0' && key <= '9') {
         addDigitToBuffer(key);
@@ -26,6 +39,11 @@ void handleDigitInput(char key) {
     }
 }
 
+/**
+ * Konwertuje naciśnięty klawisz na odpowiadający mu znak rzymski.
+ * @param key Naciśnięty klawisz.
+ * @return Znak rzymski odpowiadający naciśniętemu klawiszowi.
+ */
 char ConvertKeyToRoman(char key) {
     switch(key) {
         case '1': return 'I';
@@ -39,10 +57,17 @@ char ConvertKeyToRoman(char key) {
     }
 }
 
+/**
+ * Resetuje bufor znaków rzymskich.
+ */
 void resetRomanBuffer(void) {
     memset(romanString, 0, MAX_ROMAN_STRING_LENGTH);
 }
 
+/**
+ * Dodaje znak rzymski do bufora.
+ * @param romanChar Znak rzymski do dodania.
+ */
 void addRomanCharToBuffer(char romanChar) {
     size_t len = strlen(romanString);
     if (len < MAX_ROMAN_STRING_LENGTH - 1) {

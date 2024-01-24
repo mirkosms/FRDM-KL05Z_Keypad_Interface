@@ -12,16 +12,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
 // Typ wyliczeniowy dla operacji kalkulatora
 typedef enum { NONE, ADD, SUBTRACT, MULTIPLY, DIVIDE } Operation;
 
 // Deklaracje funkcji kalkulatora
-void processKey(char key);
-void resetCalculator(void);
-double getCurrentNumber(void);
-void setCurrentNumber(double num);
-void doubleToStr(double num, char* str);
-void deleteLastCharacter(void);
+void processKey(char key); // Przetwarza naciśnięty klawisz kalkulatora
+void resetCalculator(void); // Resetuje kalkulator do stanu początkowego
+double getCurrentNumber(void); // Pobiera bieżącą liczbę z kalkulatora
+void setCurrentNumber(double num); // Ustawia bieżącą liczbę w kalkulatorze
+void doubleToStr(double num, char* str); // Konwertuje liczbę typu double na ciąg znaków
+void deleteLastCharacter(void); // Usuwa ostatni znak z wyświetlacza kalkulatora
 
 #endif // CALCULATOR_H

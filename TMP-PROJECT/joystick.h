@@ -9,7 +9,7 @@
 #include "lcd1602.h"
 #include <stdbool.h> 
 
-// Definicje pinów
+// Definicje pinów używanych przez joystick
 #define JOYSTICK_UP_PORT    PTB
 #define JOYSTICK_DOWN_PORT  PTA
 #define JOYSTICK_LEFT_PORT  PTB
@@ -27,9 +27,9 @@
 #define JOYSTICK_SET_PIN    12
 
 // Deklaracje funkcji
-void Joystick_Init(void);
-bool Joystick_TestPin(GPIO_Type* port, uint32_t pin);
-void handleSetButton(void);
-void handleRstButton(void);
+void Joystick_Init(void); // Inicjalizuje joystick
+bool Joystick_TestPin(GPIO_Type* port, uint32_t pin); // Testuje stan pinu joysticka
+void handleSetButton(void); // Obsługuje działanie przycisku SET
+void handleRstButton(void); // Obsługuje działanie przycisku RST
 
 #endif // JOYSTICK_H

@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+// Globalne zmienne do przechowywania stanu systemu
 volatile uint32_t tickCount = 0;
 volatile uint32_t lastModeChangeTick = 0;
 volatile uint32_t lastSetButtonTick = 0;
@@ -24,7 +25,13 @@ volatile uint32_t displayTimer = 0;
 volatile int displayState = 0;
 volatile uint32_t lastActionTime = 0;
 
+/**
+ * Główna funkcja programu.
+ * Inicjalizuje urządzenia i obsługuje główną pętlę programu.
+ */
+
 int main(void) {
+    // Inicjalizacja podsystemów urządzenia
     Klaw_Init();
     LCD1602_Init();
     LCD1602_ClearAll();
@@ -34,9 +41,11 @@ int main(void) {
     UART_Init();
     SysTick_Config(SystemCoreClock / 100);
 
+    // Główna pętla programu
     while (1) {
+        // Odczyt wartości z suwaka TSI
         uint8_t sliderValue = TSI_ReadSlider();
-
+        // Logika obsługi suwaka TSI
         if (tickCount - lastActionTime > DISPLAY_UPDATE_DELAY) {
             if (sliderValue > 0) {
                 if (currentMode == ROMAN || currentMode == COMPUTER) {
@@ -54,7 +63,7 @@ int main(void) {
                 lastActionTime = tickCount;
             }
         }
-
+        // Logika obsługi joysticka
         if (Joystick_TestPin(JOYSTICK_LEFT_PORT, JOYSTICK_LEFT_PIN) && tickCount - lastModeChangeTick > 500) {
             changeMode(MUSIC);
             LCD1602_ClearAll();
@@ -73,47 +82,69 @@ int main(void) {
             changeMode(DEFAULT);
         }
 
+        // Obsługa przycisków SET i RST
         handleSetButton();
         handleRstButton();
 
+        // Logika obsługi różnych trybów działania urządzenia
         switch (currentMode) {
             case MUSIC:
+                // Logika dla trybu MUSIC
                 break;
             case COMPUTER:
+                // Logika dla trybu COMPUTER
                 break;
             case ROMAN:
+                // Logika dla trybu ROMAN
                 break;
             case DEFAULT:
             default:
+                // Logika dla domyślnego trybu działania
                 break;
         }
     }
 }
 
+/**
+ * Funkcja obsługi przerwań SysTick.
+ * Wywoływana co każdy tick SysTick, służy do obsługi klawiatury i logiki programu.
+ */
 void SysTick_Handler(void) {
-    static char last_key = 0;
-    static int debounce_counter = 0;
+    static char last_key = 0;  // Ostatnio naciśnięty klawisz
+    static int debounce_counter = 0;  // Licznik dla debouncingu klawisza
 
-    tickCount++;
+    tickCount++;  // Inkrementacja globalnego licznika czasu
+
+    // Obsługa przycisków reset i set
     handleRstButton(); 
     handleSetButton();
 
+    // Odczyt stanu klawiatury
     char key = Klaw_Read();
     if (key != last_key) {
+        // Resetowanie licznika debouncingu przy zmianie klawisza
         last_key = key;
 
+        // Obsługa naciśnięcia klawisza
         if (key != 0) {
-            handleKeyboardInput(key);  // Wywołanie funkcji obsługującej tryby
+            // Wywołanie funkcji obsługującej naciśnięcie klawisza w zależności od trybu
+            handleKeyboardInput(key); 
 
+            // Specjalna obsługa dla trybu MUSIC
             if (currentMode == MUSIC) {
-                handleMusicMode(key);  // Bezpośrednie odtwarzanie dźwięku w trybie MUSIC
-            } else if (currentMode == DEFAULT) {
-                processKey(key);  // Obsługa kalkulatora w trybie DEFAULT
+                handleMusicMode(key);  // Odtwarzanie dźwięku
+            } 
+            // Obsługa kalkulatora w trybie DEFAULT
+            else if (currentMode == DEFAULT) {
+                processKey(key);  
             }
         } else {
+            // Zatrzymanie dźwięku buzzera, gdy klawisz zostanie zwolniony
             Buzzer_StopTone();
         }
-    } else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
+    } 
+    // Logika debouncingu klawiatury
+    else if (key != 0 && debounce_counter < DEBOUNCE_COUNT) {
         debounce_counter++;
     }
 }

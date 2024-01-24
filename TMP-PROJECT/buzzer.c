@@ -1,29 +1,41 @@
 #include "buzzer.h"
 
+// Globalna zmienna określająca, czy buzzer jest aktywny
 extern Mode currentMode;
-volatile int buzzerEnabled = 1; // Inicjalizacja zmiennej
+volatile int buzzerEnabled = 1; // Domyślnie buzzer jest włączony
 
-// Funkcje dotyczące buzzera
+/**
+ * Inicjalizuje buzzer.
+ */
 void Buzzer_Init(void) {
-    PWM_Init();
-    Buzzer_StopTone(); // Zatrzymaj dźwięk na początku
+    PWM_Init(); // Inicjalizacja modułu PWM
+    Buzzer_StopTone(); // Zatrzymanie dźwięku na początku
 }
 
+/**
+ * Odtwarza ton o zadanej częstotliwości.
+ * @param frequency Częstotliwość tonu do odtworzenia.
+ */
 void Buzzer_PlayTone(uint32_t frequency) {
-    // Ustawienie częstotliwości dla buzzera
+    // Ustawienie modułu TPM dla generowania sygnału PWM
     TPM0->MOD = (SystemCoreClock / (64 * frequency)) - 1;
-    TPM0->CONTROLS[3].CnV = (TPM0->MOD) / 2; // Ustaw wypełnienie 50%
+    TPM0->CONTROLS[3].CnV = (TPM0->MOD) / 2; // Ustawienie wypełnienia 50%
 }
 
+/**
+ * Zatrzymuje odtwarzanie tonu.
+ */
 void Buzzer_StopTone(void) {
-    // Zatrzymanie dźwięku buzzera
-    TPM0->CONTROLS[3].CnV = 0;  // Wypełnienie impulsu 0%
+    TPM0->CONTROLS[3].CnV = 0; // Ustawienie wypełnienia impulsu na 0%
 }
 
+/**
+ * Odtwarza dźwięk odpowiadający naciśniętemu klawiszowi.
+ * @param key Klawisz naciśnięty przez użytkownika.
+ */
 void Buzzer_PlayNoteForKey(char key) {
     uint32_t frequency = 0;
-
-    // Przypisanie dźwięku do klawisza
+    // Przypisanie odpowiedniej częstotliwości do każdego klawisza
     switch(key) {
         case '1': frequency = C4_FREQ; break;
         case '2': frequency = D4_FREQ; break;
@@ -41,13 +53,14 @@ void Buzzer_PlayNoteForKey(char key) {
         case '0': frequency = B5_FREQ; break;
         case '=': frequency = C6_FREQ; break;
         case '+': frequency = D6_FREQ; break;
-        default: frequency = 0; break;
+        default: frequency = 0; break;  // Brak dźwięku dla innych klawiszy
     }
 
+    // Odtwarzanie dźwięku o określonej częstotliwości
     if (frequency > 0) {
         Buzzer_PlayTone(frequency);
     } else {
-        Buzzer_StopTone();
+        Buzzer_StopTone(); // Zatrzymanie dźwięku, jeśli nie ma przypisanego tonu
     }
 }
 

@@ -25,12 +25,12 @@
 #define C6_FREQ  1047 // Następna oktawa C
 #define D6_FREQ  1175
 
-extern volatile int buzzerEnabled; // Deklaracja zmiennej
+extern volatile int buzzerEnabled; // Globalna zmienna określająca, czy buzzer jest aktywny
 
 // Prototypy funkcji
-void Buzzer_Init(void);
-void Buzzer_PlayTone(uint32_t frequency);
-void Buzzer_StopTone(void);
-void Buzzer_PlayNoteForKey(char key);
+void Buzzer_Init(void); // Inicjalizuje buzzer
+void Buzzer_PlayTone(uint32_t frequency); // Odtwarza ton o zadanej częstotliwości
+void Buzzer_StopTone(void); // Zatrzymuje odtwarzanie tonu
+void Buzzer_PlayNoteForKey(char key); // Odtwarza ton odpowiadający naciśniętemu klawiszowi
 
 #endif // BUZZER_H
